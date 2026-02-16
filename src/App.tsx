@@ -324,9 +324,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh', backgroundColor: "#000" }}>
-      <div>
-        <Slide1 layerVisibility={layerVisibility} layerOpacity={layerOpacity} layerPosition={layerPosition} />
+    <div style={{ backgroundColor: "#000", minHeight: '100vh' }}>
+      {/* Scroll container for animation */}
+      <div style={{ height: '300vh', position: 'relative' }}>
+        <div style={{ position: 'sticky', top: 0, width: '100vw', height: '100vh', overflow: 'hidden' }}>
+          <Slide1 layerVisibility={layerVisibility} layerOpacity={layerOpacity} layerPosition={layerPosition} />
+        </div>
       </div>
       <LayerToggle
         visibility={layerVisibility}

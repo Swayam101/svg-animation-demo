@@ -153,6 +153,7 @@ const layerInfo = [
 
 const LayerToggle: React.FC<LayerToggleProps> = ({ visibility, opacity, position, onToggle, onOpacityChange, onPositionChange, onToggleAll, onReset }) => {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [isModalVisible, setIsModalVisible] = useState(true);
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups(prev => {
@@ -184,31 +185,84 @@ const LayerToggle: React.FC<LayerToggleProps> = ({ visibility, opacity, position
   });
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 20,
-      right: 20,
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      border: '2px solid #333',
-      borderRadius: 8,
-      padding: '16px',
-      minWidth: 320,
-      maxHeight: '90vh',
-      overflowY: 'auto',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      zIndex: 1000,
-    }}>
-      <h3 style={{
-        margin: '0 0 16px 0',
-        fontSize: 16,
-        fontWeight: 600,
-        color: '#333',
-        borderBottom: '2px solid #ddd',
-        paddingBottom: 8,
-      }}>
-        Layer Visibility Controls
-      </h3>
+    <>
+      {/* Toggle Button - Always visible */}
+      {!isModalVisible && (
+        <button
+          onClick={() => setIsModalVisible(true)}
+          style={{
+            position: 'fixed',
+            top: 20,
+            right: 20,
+            backgroundColor: '#2196F3',
+            color: 'white',
+            border: 'none',
+            borderRadius: 8,
+            padding: '12px 16px',
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            zIndex: 1000,
+            transition: 'opacity 0.2s',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+        >
+          ⚙️ Show Controls
+        </button>
+      )}
+
+      {/* Modal Panel */}
+      {isModalVisible && (
+        <div style={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          border: '2px solid #333',
+          borderRadius: 8,
+          padding: '16px',
+          minWidth: 320,
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 16,
+          }}>
+            <h3 style={{
+              margin: 0,
+              fontSize: 16,
+              fontWeight: 600,
+              color: '#333',
+            }}>
+              Layer Controls
+            </h3>
+            <button
+              onClick={() => setIsModalVisible(false)}
+              style={{
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: 4,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+            >
+              ✕ Hide
+            </button>
+          </div>
 
       <div style={{ marginBottom: 16 }}>
         {layerInfo.map(layer => {
@@ -507,7 +561,9 @@ const LayerToggle: React.FC<LayerToggleProps> = ({ visibility, opacity, position
       }}>
         Layer controls ready
       </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 
