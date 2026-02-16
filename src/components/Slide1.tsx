@@ -1,142 +1,8 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import type { LayerOpacity, LayerPosition } from "./LayerToggle";
 
-export interface LayerVisibility {
-  'bg-sky': boolean;
-  'stars': boolean;
-  'clouds-decorative': boolean;
-  'ground-back': {
-    'mountain-hills': boolean;
-    'lower-landscape': boolean;
-    'middle-landscape': boolean;
-    'upper-terrain': boolean;
-    'front-terrain': boolean;
-  };
-  'ground-front': {
-    'bottom-strip': boolean;
-    'middle-section': boolean;
-    'detail-layer': boolean;
-  };
-  'trees-plants': {
-    'trees': boolean;
-    'cacti': boolean;
-    'ground-vegetation': boolean;
-  };
-  'stones': boolean;
-  'tents-campfire': {
-    'tent-1': boolean;
-    'tent-2': boolean;
-    'tent-3': boolean;
-    'campfire': boolean;
-  };
-}
-
-interface SVGComponentProps extends React.SVGProps<SVGSVGElement> {
-  layerVisibility?: LayerVisibility;
-  layerOpacity?: LayerOpacity;
-  layerPosition?: LayerPosition;
-}
-
-const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpacity, layerPosition, ...props }) => {
-  // Default all layers visible
-  const visibility: LayerVisibility = layerVisibility || {
-    'bg-sky': true,
-    'stars': true,
-    'clouds-decorative': true,
-    'ground-back': {
-      'mountain-hills': true,
-      'lower-landscape': true,
-      'middle-landscape': true,
-      'upper-terrain': true,
-      'front-terrain': true,
-    },
-    'ground-front': {
-      'bottom-strip': true,
-      'middle-section': true,
-      'detail-layer': true,
-    },
-    'trees-plants': {
-      'trees': true,
-      'cacti': true,
-      'ground-vegetation': true,
-    },
-    'stones': true,
-    'tents-campfire': {
-      'tent-1': true,
-      'tent-2': true,
-      'tent-3': true,
-      'campfire': true,
-    },
-  };
-
-  const opacity: LayerOpacity = layerOpacity || {
-    'bg-sky': 100,
-    'stars': 100,
-    'clouds-decorative': 100,
-    'ground-back': {
-      'mountain-hills': 100,
-      'lower-landscape': 100,
-      'middle-landscape': 100,
-      'upper-terrain': 100,
-      'front-terrain': 100,
-    },
-    'ground-front': {
-      'bottom-strip': 100,
-      'middle-section': 100,
-      'detail-layer': 100,
-    },
-    'trees-plants': {
-      'trees': 100,
-      'cacti': 100,
-      'ground-vegetation': 100,
-    },
-    'stones': 100,
-    'tents-campfire': {
-      'tent-1': 100,
-      'tent-2': 100,
-      'tent-3': 100,
-      'campfire': 100,
-    },
-  };
-
-  const position: LayerPosition = layerPosition || {
-    'bg-sky': { x: 0, y: 0 },
-    'stars': { x: 0, y: 0 },
-    'clouds-decorative': { x: 0, y: 0 },
-    'ground-back': {
-      'mountain-hills': { x: 0, y: 0 },
-      'lower-landscape': { x: 0, y: 0 },
-      'middle-landscape': { x: 0, y: 0 },
-      'upper-terrain': { x: 0, y: 0 },
-      'front-terrain': { x: 0, y: 0 },
-    },
-    'ground-front': {
-      'bottom-strip': { x: 0, y: 0 },
-      'middle-section': { x: 0, y: 0 },
-      'detail-layer': { x: 0, y: 0 },
-    },
-    'trees-plants': {
-      'trees': { x: 0, y: 0 },
-      'cacti': { x: 0, y: 0 },
-      'ground-vegetation': { x: 0, y: 0 },
-    },
-    'stones': { x: 0, y: 0 },
-    'tents-campfire': {
-      'tent-1': { x: 0, y: 0 },
-      'tent-2': { x: 0, y: 0 },
-      'tent-3': { x: 0, y: 0 },
-      'campfire': { x: 0, y: 0 },
-    },
-  };
-
-  // Helper to check if any sub-layer is visible
-  const isGroupVisible = (group: any) => {
-    if (typeof group === 'boolean') return group;
-    return Object.values(group).some(v => v === true);
-  };
-
+const SVGComponent: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   // Scroll-based animation
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -323,7 +189,7 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
     return () => {
       gsap.killTweensOf([smoke, flameMain, flameInner, flameTips, logCenter, ...Array.from(embers)]);
     };
-  }, [visibility['tents-campfire']['campfire']]);
+  }, []);
 
 
   return (
@@ -491,7 +357,7 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
             />
             {/* Background Sky */}
             {/* Background Sky - Always visible, no animation */}
-            <g id="bg-sky" style={{ display: visibility['bg-sky'] ? 'block' : 'none', opacity: opacity['bg-sky'] / 100 }} transform={`translate(${position['bg-sky'].x}, ${position['bg-sky'].y})`}>
+            <g id="bg-sky">
             <rect
               className="cls-38"
               x={5.38}
@@ -503,9 +369,8 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
             {/* Stars & Celestial */}
             {/* Stars - Fade in after ground */}
             <g id="stars" style={{ 
-              display: visibility['stars'] ? 'block' : 'none', 
-              opacity: getAnimatedOpacity(opacity['stars'], 0.15, 0.25) 
-            }} transform={`translate(${position['stars'].x}, ${position['stars'].y})`}>
+              opacity: getAnimatedOpacity(100, 0.15, 0.25) 
+            }}>
               <circle className="cls-32" cx={189.09} cy={261.63} r={3.45} />
               <circle className="cls-32" cx={253.81} cy={311.29} r={1.79} />
               <circle className="cls-32" cx={238.58} cy={270.95} r={1.79} />
@@ -633,9 +498,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
             {/* Clouds & Decorative Elements */}
             {/* Clouds - Fade in and slide from right */}
             <g id="clouds-decorative" style={{ 
-              display: visibility['clouds-decorative'] ? 'block' : 'none', 
-              opacity: getAnimatedOpacity(opacity['clouds-decorative'], 0.2, 0.3) 
-            }} transform={getAnimatedTransform(position['clouds-decorative'].x, position['clouds-decorative'].y, 0.2, 0.3, 200, 0)}>
+              
+              opacity: getAnimatedOpacity(100, 0.2, 0.3) 
+            }} transform={getAnimatedTransform(0, 0, 0.2, 0.3, 200, 0)}>
               <image
                 className="cls-5"
                 width={915}
@@ -656,12 +521,12 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
             </g>
             {/* Ground Background Layers */}
-            <g id="ground-back" style={{ display: isGroupVisible(visibility['ground-back']) ? 'block' : 'none' }}>
+            <g id="ground-back" style={{  }}>
               {/* Mountain Hills - Slide from left */}
               <g id="ground-back-mountain-hills" style={{ 
-                display: visibility['ground-back']['mountain-hills'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-back']['mountain-hills'], 0.25, 0.35) 
-              }} transform={getAnimatedTransform(position['ground-back']['mountain-hills'].x, position['ground-back']['mountain-hills'].y, 0.25, 0.35, -300, 0)}>
+                
+                opacity: getAnimatedOpacity(100, 0.25, 0.35) 
+              }} transform={getAnimatedTransform(0, 0, 0.25, 0.35, -300, 0)}>
                 <path
                   className="cls-3"
                   d="M369.98,406.78c34.01-16.58,75.66-57.01,92.68-68.68,27.09-18.57,30.83-24.58,47.49-29.87,33.57-10.67,48.76,4.05,72.77-9.96,13.27-7.74,8.74-12.31,33.7-37.53,21.6-21.82,39.94-33.51,45.19-36.77,23.66-14.67,35.9-22.26,51.32-20.68,12.41,1.27,17.46,7.52,50.55,37.53,44.05,39.95,54.89,46.85,59.74,49.79,21.71,13.17,34.9,14.83,58.21,22.98,25.63,8.96,61.3,24.99,101.87,55.91,14.06-7.09,26.14-12.36,35.23-16.09,16.17-6.62,21.7-7.86,26.81-8.43,12.87-1.43,43.6,23.56,50.55,26.04-.26,11-2.38,19.93-5.22,28.05-13.4,38.28-45.72,66.85-85.11,76.51-78.84,19.33-179.25,35.43-295.71,34.34-122.83-1.15-226.93-21.1-305.75-42.79-19.38-5.33-33.79-21.89-35.86-41.88-.48-4.66-.37-10.22,1.53-18.48Z"
@@ -669,9 +534,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Lower Landscape - Slide from right */}
               <g id="ground-back-lower-landscape" style={{ 
-                display: visibility['ground-back']['lower-landscape'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-back']['lower-landscape'], 0.3, 0.4) 
-              }} transform={getAnimatedTransform(position['ground-back']['lower-landscape'].x, position['ground-back']['lower-landscape'].y, 0.3, 0.4, 300, 0)}>
+                
+                opacity: getAnimatedOpacity(100, 0.3, 0.4) 
+              }} transform={getAnimatedTransform(0, 0, 0.3, 0.4, 300, 0)}>
                 <path
                   className="cls-21"
                   d="M.02,378.18c6.21,5.13,16.53,12.03,29.76,12.77,21.04,1.16,26.37-14.55,54.4-22.98,30.79-9.27,40.18,5.01,61.58-8.17,11.31-6.97,15.36-15.11,29.76-18.38,7.67-1.74,14.16-1.17,20.53-6.64,5.79-4.97,4.71-9.08,10.26-12.26,6.56-3.75,11.35.12,20.19-1.87,4.39-.99,10.7-3.64,17.45-11.57,1.69-.28,3.56-.51,5.58-.64,2.46-.16,4.72-.15,6.74-.04,3.97,1.94,9.8,4.84,16.76,8.51,28.38,14.97,32.96,20.31,44.13,24.51,20.24,7.62,29.11-.9,51.83.51,17.99,1.12,28.46,7.45,69.79,33.7,77.88,49.46,103.96,67.13,126.24,64.34,38.8-4.85,41.57-5.62,41.57-5.62,5.05-1.4,9.37-2.9,15.4-2.04,10.05,1.43,15.37,8.09,24.63,15.83,5.94,4.96,14.98,11.61,27.71,17.87,134.33-9.41,203.33-28.21,241.71-44.43,32.63-13.79,66.82-24.06,98.53-39.83,16.26-8.09,33.97-17.91,60.81-22.21,16.75-2.68,20.49-.56,31.05-4.85,20.77-8.44,25.92-24.64,44.65-45.96,9.01-10.26,23.28-24.12,45.16-37.28,4.12-.45,10.56-1.08,18.47-1.53,23.91-1.38,27.1.8,34.9-1.02,14.36-3.35,17.96-14.08,36.44-34.21,0,0,8.61-9.38,37.98-33.7,37.67-31.2,163.4,14.16,217.08,35.23l1.54,216c-188.8,37.22-408.07,67.48-652.77,78.13C546.08,545.32,244.59,517.54.02,477.76v-99.57Z"
@@ -679,9 +544,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Middle Landscape - Slide from left */}
               <g id="ground-back-middle-landscape" style={{ 
-                display: visibility['ground-back']['middle-landscape'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-back']['middle-landscape'], 0.35, 0.45) 
-              }} transform={getAnimatedTransform(position['ground-back']['middle-landscape'].x, position['ground-back']['middle-landscape'].y, 0.35, 0.45, -250, 0)}>
+                
+                opacity: getAnimatedOpacity(100, 0.35, 0.45) 
+              }} transform={getAnimatedTransform(0, 0, 0.35, 0.45, -250, 0)}>
                 <path
                   className="cls-19"
                   d="M2.32,474.18c61.13-22.66,109.44-41.59,140.94-54.13,69.01-27.47,86.79-36.01,118.47-34.72,23.29.95,51.78,11.52,108.77,32.68,64.21,23.84,63.24,28.55,92.43,34.72,46.99,9.94,52.02-1.74,105.19,8.17,28.73,5.36,49.55,12.92,89.87,27.57,32.62,11.85,59.13,23.26,77.62,31.66,12.09,7.83,24.17,15.66,36.26,23.49,3.14-3.51,8.01-7.73,14.3-8.17,7.01-.5,11.49,4.01,19.4,8.17,0,0,6.52,3.43,27.57,7.66,26.27,5.28,87.79-6.29,102.13-8.68,81.43-13.59,111.72,23.18,172.85,7.91,6.3-1.57,26.05-6.98,52.85-6.89,20.67.06,35.89,3.36,38.3,3.83,26.03,5.08,122.35,50.61,342.13-26.3,0,33.7-6.13,1.02-6.13,34.72-240.13,35.19-522.5,59.65-838.47,55.15-257.42-3.67-490.84-25.89-695.49-56.17.34-26.89.68-53.79,1.02-80.68Z"
@@ -693,9 +558,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Upper Terrain - Slide from right */}
               <g id="ground-back-upper-terrain" style={{ 
-                display: visibility['ground-back']['upper-terrain'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-back']['upper-terrain'], 0.4, 0.5) 
-              }} transform={getAnimatedTransform(position['ground-back']['upper-terrain'].x, position['ground-back']['upper-terrain'].y, 0.4, 0.5, 250, 0)}>
+                
+                opacity: getAnimatedOpacity(100, 0.4, 0.5) 
+              }} transform={getAnimatedTransform(0, 0, 0.4, 0.5, 250, 0)}>
                 <path
                   className="cls-31"
                   d="M1542.15,485.21c-.51,36.85-1.02,73.7-1.54,110.55-210.53,33.85-456.16,59.37-730.37,62.36-306.92,3.34-579.69-22.32-809.2-57.84-.17-40.24-.34-80.47-.51-120.71,33.66,2.58,45.8,5.03,49.26,7.04.55.32,3.41,2.09,5.25,1.02,1.75-1.01,1.14-3.76,2.94-4.61,1.6-.75,2.75,1.1,4.73.64,2.8-.64,2.51-4.79,5.12-5.89,2.68-1.13,4.47,2.6,9.47,3.84,7.36,1.82,12.15-4.13,15.87-1.41,2.83,2.07,2.58,7.36,4.09,7.29.67-.03.76-1.06,2.18-1.79.94-.48,2.49-.84,3.45-.26,1.66,1.01.27,4.02,1.28,5.89,1.93,3.54,11,.09,21.5,0,13.6-.12,15.42,5.53,30.45,5.12,8.23-.22,7.3-1.9,14.59-2.05,14.14-.28,16.79,6.06,33.27,9.21,5.98,1.14,18.05,3.32,31.48-.77,9.82-2.99,9.42-5.99,16.89-6.65,11.44-1.02,13.99,5.87,27.64,5.12,4.67-.26,9.17-1.71,12.03,1.02,2.34,2.24,1.42,5.12,4.09,6.91,3.23,2.16,6.8-.54,8.7,1.54,1.79,1.95-1.06,5.01.51,7.42,2.34,3.59,10.76.19,13.05,3.71.95,1.46.46,3.48-.13,4.99,3.66.14,9.04,0,15.31-1.45,7.83-1.82,12.15-4.58,14.84-2.56,1.36,1.01,2.58,3.44,1.45,9.9,1.54-1.95,3.69-4.21,5.37-3.71,1.64.49,1.09,3.08,3.2,5.89,3.03,4.02,7.45,3.03,8.96,6.27.57,1.22.81,3.22-.9,6.57.02,3.84.94,5.18,1.88,5.63,1.23.6,2.44-.38,4.44.17,1.46.4,2.49,1.39,3.16,2.22.21-.66,1.41-4.24,4.61-5.37,4.93-1.76,10.91,3.63,10.75,6.91-.05.97-.65,2.02-.06,2.83.59.82,1.95.78,2.49.76,4.79-.2,7.71-5.14,9.21-4.48.8.35,1.18,2.3-.13,8.57,1.13-1.21,2.94-2.74,5.12-2.69,2.54.06,3.35,2.22,6.78,4.35,3.7,2.3,9.47,3.94,12.07,1.75,1.69-1.42.6-3.26,2.05-4.95,2.21-2.59,7.24-1.19,16.8.85,15.41,3.29,19.55,3.31,23.37,1.36,3.05-1.56,3.02-2.91,5.46-4.61,8.17-5.69,19.04,2.19,39.07,7.85,10.82,3.06,24.37,6.74,40.26,4.01,11.65-2,9.67-4.89,19.45-6.4,25.79-3.97,41.92,15.77,56.81,7.17,3.39-1.96,5.31-4.57,10.24-5.37,7.77-1.26,10.32,4.07,17.4,3.33,9.08-.95,10.73-10.32,17.91-9.72,5.56.46,6.1,6.2,12.8,8.7,7.66,2.86,14.3-1.88,21.5-4.09,15.6-4.81,28.45,3.9,42.23,8.45,13.99,4.62,35.53,7.1,67.56-3.84,33.83,2.06,59.83-2.76,77.54-7.68,48.81-13.55,81.11-40.7,118.74-27.64,6.19,2.15,10.92,4.83,13.82,6.65,4.2.57,10.16.69,16.21-2.05,3.17-1.44,4.17-2.67,7.34-4.09,5.83-2.63,9.48-1.64,17.06-2.05,9.21-.5,20.04-1.08,27.21-7.93,3.25-3.1,3.25-5.11,6.91-7.17,5.1-2.87,10.63-2.07,15.1-1.28,23.65,4.17,26.01,9.54,33.87,7.34,8.93-2.51,9.03-10.32,18.77-12.62,7.3-1.72,14.21,1.03,18.77,3.5.04-1.2.29-2.96,1.54-4.09,4.07-3.71,15.18,2.42,17.91,3.84,23.43,12.14,72.72,10.47,90.59,8.45,22.52-2.55,18.7-8.34,65-25.34,30.32-11.13,63.4-22.71,104.41-23.54,16.84-.34,41.69,1.01,71.66,9.72Z"
@@ -703,9 +568,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Front Terrain - Slide from left */}
               <g id="ground-back-front-terrain" style={{ 
-                display: visibility['ground-back']['front-terrain'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-back']['front-terrain'], 0.45, 0.55) 
-              }} transform={getAnimatedTransform(position['ground-back']['front-terrain'].x, position['ground-back']['front-terrain'].y, 0.45, 0.55, -200, 0)}>
+                
+                opacity: getAnimatedOpacity(100, 0.45, 0.55) 
+              }} transform={getAnimatedTransform(0, 0, 0.45, 0.55, -200, 0)}>
                 <path
                   className="cls-29"
                   d="M2.32,562.1l1.53,110.3c210.04,33.77,455.1,59.24,728.68,62.21,306.21,3.33,578.35-22.27,807.32-57.7.17-40.14.34-80.28.51-120.43-33.58,2.58-45.69,5.02-49.15,7.02-.55.32-3.4,2.08-5.23,1.02-1.75-1.01-1.14-3.75-2.94-4.6-1.6-.75-2.75,1.09-4.72.64-2.79-.64-2.5-4.78-5.11-5.87-2.67-1.13-4.46,2.6-9.45,3.83-7.34,1.82-12.12-4.12-15.83-1.4-2.82,2.06-2.58,7.34-4.09,7.28-.67-.03-.76-1.06-2.17-1.79-.94-.48-2.49-.84-3.45-.26-1.65,1.01-.27,4.01-1.28,5.87-1.92,3.53-10.97.09-21.45,0-13.57-.12-15.38,5.52-30.38,5.11-8.21-.22-7.28-1.9-14.55-2.04-14.11-.28-16.75,6.04-33.19,9.19-5.96,1.14-18,3.31-31.4-.77-9.79-2.98-9.39-5.97-16.85-6.64-11.41-1.02-13.96,5.86-27.57,5.11-4.66-.26-9.15-1.7-12,1.02-2.34,2.23-1.41,5.1-4.09,6.89-3.22,2.16-6.78-.54-8.68,1.53-1.78,1.94,1.06,5-.51,7.4-2.34,3.58-10.73.18-13.02,3.7-.95,1.45-.45,3.47.13,4.98-3.65.14-9.02,0-15.28-1.45-7.82-1.82-12.12-4.57-14.81-2.55-1.35,1.01-2.58,3.44-1.45,9.87-1.54-1.95-3.69-4.2-5.36-3.7-1.64.48-1.08,3.07-3.19,5.87-3.02,4.01-7.43,3.03-8.94,6.26-.57,1.21-.81,3.21.89,6.55-.02,3.83-.94,5.17-1.87,5.62-1.23.59-2.43-.38-4.43.17-1.46.4-2.49,1.39-3.15,2.21-.21-.66-1.41-4.23-4.6-5.36-4.92-1.75-10.89,3.62-10.72,6.89.05.97.65,2.01.06,2.82-.59.82-1.94.78-2.49.75-4.78-.2-7.69-5.13-9.19-4.47-.8.35-1.18,2.29.13,8.55-1.13-1.21-2.93-2.73-5.11-2.68-2.54.06-3.34,2.22-6.77,4.34-3.69,2.29-9.45,3.93-12.04,1.74-1.69-1.42-.6-3.25-2.04-4.94-2.21-2.58-7.22-1.18-16.77.85-15.38,3.28-19.51,3.31-23.32,1.36-3.05-1.55-3.01-2.9-5.45-4.6-8.15-5.68-19,2.18-38.98,7.83-10.79,3.05-24.31,6.73-40.17,4-11.63-2-9.65-4.88-19.4-6.38-25.73-3.96-41.82,15.73-56.68,7.15-3.38-1.95-5.3-4.56-10.21-5.36-7.76-1.26-10.29,4.06-17.36,3.32-9.06-.95-10.7-10.3-17.87-9.7-5.54.46-6.08,6.18-12.77,8.68-7.64,2.86-14.27-1.87-21.45-4.09-15.57-4.8-28.38,3.89-42.13,8.43-13.96,4.61-35.45,7.09-67.4-3.83-33.75,2.06-59.69-2.76-77.36-7.66-48.7-13.52-80.92-40.6-118.47-27.57-6.18,2.14-10.89,4.82-13.79,6.64-4.19.57-10.14.69-16.17-2.04-3.16-1.43-4.16-2.66-7.32-4.09-5.82-2.62-9.45-1.63-17.02-2.04-9.18-.5-19.99-1.08-27.15-7.91-3.24-3.10-3.25-5.1-6.89-7.15-5.09-2.86-10.61-2.06-15.06-1.28-23.6,4.16-25.95,9.52-33.79,7.32-8.91-2.5-9.01-10.3-18.72-12.6-7.28-1.72-14.17,1.02-18.72,3.49-.04-1.2-.29-2.95-1.53-4.09-4.06-3.7-15.15,2.42-17.87,3.83-23.37,12.11-72.55,10.45-90.38,8.43-22.47-2.55-18.66-8.32-64.85-25.28-30.25-11.1-63.25-22.65-104.17-23.49-16.8-.34-41.6,1-71.49,9.7Z"
@@ -713,12 +578,12 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
             </g>
             {/* Ground Foreground */}
-            <g id="ground-front" style={{ display: isGroupVisible(visibility['ground-front']) ? 'block' : 'none' }}>
+            <g id="ground-front" style={{  }}>
               {/* Ground Front Bottom Strip - Opacity only - APPEARS FIRST */}
               <g id="ground-front-bottom-strip" style={{ 
-                display: visibility['ground-front']['bottom-strip'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-front']['bottom-strip'], 0, 0.1) 
-              }} transform={`translate(${position['ground-front']['bottom-strip'].x}, ${position['ground-front']['bottom-strip'].y})`}>
+                
+                opacity: getAnimatedOpacity(100, 0, 0.1) 
+              }}>
                 <path
                   className="cls-23"
                   d="M3.37,926.63c174.61,3.86,314.71,19.55,409.97,33.07,182.7,25.92,235.58,48.83,390.26,54.69,125.69,4.76,212.55,8.05,327.19-16.53,89.45-19.18,172.62-50.36,316.68-59.77,38.75-2.53,70.77-2.76,91.98-2.54-.73-40.56-1.46-81.11-2.19-121.67-68.2-7.62-159.2-11.15-264.55,3.39-92.03,12.7-168.96,35.59-227.76,57.65-46.88,15.65-116.35,34.32-201.92,40.27-64,4.45-102.18-.63-223.82-14.84-293.13-34.23-365.14-39-404.28-41.12-91.5-4.95-165.57-4.17-210.68-2.97-.29,23.46-.58,46.92-.88,70.37Z"
@@ -726,9 +591,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Ground Front Middle Section - Opacity only */}
               <g id="ground-front-middle-section" style={{ 
-                display: visibility['ground-front']['middle-section'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-front']['middle-section'], 0.05, 0.15) 
-              }} transform={`translate(${position['ground-front']['middle-section'].x}, ${position['ground-front']['middle-section'].y})`}>
+                
+                opacity: getAnimatedOpacity(100, 0.05, 0.15) 
+              }}>
                 <path
                   className="cls-11"
                   d="M9.38,636.66c23.7-2.41,61.32-5.19,107.31-3.82,176.66,5.28,259.83,65.43,412.6,91.57,50.27,8.6,121.15,6.41,262.8,2.54,234.57-6.4,281.83-29.98,423.55-10.88,99.77,13.44,209.07,41.26,209.07,41.26,46.6,11.86,83.12,23.23,111.79,32.42-.58,6.64.24,17.53-.34,24.17-132.1-4.6-235,3.83-305.19,16.05-4.99.87-101.78,15.96-165.13,37.31-6.53,2.2-16.72,5.58-37.09,12.35-41.03,13.63-55.66,18.37-75.22,23.6,0,0-14.54,4.2-29.61,7.29-110.22,22.63-207.95,8.84-259.59,1.13-28.18-4.21-40.08-7.44-63.7-11.78-21.23-3.9-31-5.37-42.59-6.87-23.88-3.09-41.42-3.98-50.66-4.52-38.5-2.26-61.01-6.12-96.37-10.18-116.8-13.42-275.57-18.14-306.16-18.65-33.87-.57-67.74-1.13-101.62-1.7l6.13-221.29Z"
@@ -736,9 +601,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Ground Front Detail Layer - Opacity only */}
               <g id="ground-front-detail-layer" style={{ 
-                display: visibility['ground-front']['detail-layer'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['ground-front']['detail-layer'], 0.1, 0.2) 
-              }} transform={`translate(${position['ground-front']['detail-layer'].x}, ${position['ground-front']['detail-layer'].y})`}>
+                
+                opacity: getAnimatedOpacity(100, 0.1, 0.2) 
+              }}>
                 <path
                   className="cls-1"
                   d="M4.17,638.3c11.15-2.31,28.08-4.63,48.26-2.49,14.5,1.54,20.83,4.34,49.49,12.72,48.77,14.25,46.36,10.79,65.26,18.23,28.87,11.36,22.31,14.64,55.63,28.4,18.64,7.7,34.13,12.23,52.12,26.71,10.27,8.26,16.78,13.5,16.64,19.92-.39,18.23-54.05,30.83-84.53,38.15-46.01,11.06-113.67,28.01-201.92,52.57-.32-64.74-.64-129.48-.95-194.22Z"
@@ -746,13 +611,13 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
             </g>
             {/* Trees & Vegetation */}
-            <g id="trees-plants" style={{ display: isGroupVisible(visibility['trees-plants']) ? 'block' : 'none' }}>
+            <g id="trees-plants" style={{  }}>
               {/* Trees (cls-26 - large ornate trees) */}
               {/* Trees - Fade in and slide up */}
               <g id="trees-plants-trees" style={{ 
-                display: visibility['trees-plants']['trees'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['trees-plants']['trees'], 0.5, 0.6) 
-              }} transform={getAnimatedTransform(position['trees-plants']['trees'].x, position['trees-plants']['trees'].y, 0.5, 0.6, 0, 50)}>
+                
+                opacity: getAnimatedOpacity(100, 0.5, 0.6) 
+              }} transform={getAnimatedTransform(0, 0, 0.5, 0.6, 0, 50)}>
                 <path
                   className="cls-26"
                   d="M121.93,839.17c1.37-10.04,3.29-20.74,5.92-31.97,5.84-24.87,13.81-46.34,21.91-64.14-.79.20-1.96.61-3.19,1.45-1.1.75-2.03,1.39-2.57,2.53-.1.22-.25.58-.36.56-.19-.03-.16-1.12-.1-2.02-.44.38-.89.82-1.35,1.33-1.2,1.36-1.97,2.74-2.45,3.85-.11-.25-.23-.57-.31-.95-.11-.52-.11-.98-.08-1.32-.28,1.38-.79,2.29-1.2,2.86-.7.98-1.36,1.34-2.3,2.66-.48.66-.8,1.25-.99,1.63-.09-.31-.17-.65-.23-1.04-.12-.83-.09-1.56-.02-2.12-.31.93-.87,2.28-1.92,3.67-1.14,1.52-2.4,2.47-3.26,3.03.17-2.15.75-5.52,2.86-8.91,5.09-8.2,14.61-9.47,16.09-9.64-3.07.5-6.14,1.01-9.21,1.51l.46-2.11-7.11,4.34c.58-.73,1.16-1.47,1.74-2.2-2.16,1.55-4.32,3.09-6.48,4.64l.46-2.43-6.22,3.91c.64-1.89,2.2-5.53,5.82-8.39,7.59-5.98,17.24-2.97,18.16-2.66-.81-.57-2.45-1.52-4.57-1.45-.46.02-.87.08-1.25.16.11-.28.31-.7.69-1.12.43-.48.9-.73,1.18-.86-1.07-.1-2.36-.13-3.82,0-1.47.13-2.75.4-3.78.69.15-.31.39-.7.76-1.09.77-.8,1.67-1.08,2.11-1.18-.9-.01-1.97.05-3.16.26-2.06.38-3.7,1.09-4.84,1.71.92-.86,1.84-1.71,2.76-2.57-.86-.13-2.19-.22-3.7.2-1.24.35-1.69.79-2.81,1.04-.86.19-2.19.29-4-.35h.05c.47-.59,1.19-1.39,2.17-2.17,4.33-3.45,9.52-3.22,10.95-3.16,8.24.36,13.39,6.74,14.21,7.8l.2-.59c-.54-.77-1.29-1.68-2.3-2.57-1.62-1.42-3.25-2.22-4.41-2.66l2.57-.49c-.69-.62-1.78-1.45-3.29-2.11-1.48-.64-2.8-.87-3.72-.95.89-.26,1.78-.53,2.66-.79-.76-.62-1.99-1.45-3.68-2.01-1.17-.38-2.22-.52-3.03-.56.59-.26,1.18-.53,1.78-.79-.45-.43-.95-.86-1.51-1.28-2.31-1.73-4.68-2.55-6.48-2.96,1.83-.18,8.67-.63,15.3,3.95,6.31,4.36,8.4,10.48,8.95,12.3.16-.4.32-.96.33-1.64.02-1.71-.97-2.9-1.28-3.26l1.83.74c-.24-.63-.56-1.34-1-2.09-.87-1.46-1.89-2.5-2.7-3.19.42-.02.93,0,1.51.1.77.13,1.39.38,1.84.59-.53-.78-1.26-1.7-2.24-2.63-.96-.92-1.91-1.61-2.7-2.11.02-.06.17-.44.59-.59.33-.12.71-.04.99.2-.14-.88-.45-2.13-1.18-3.49-1.03-1.91-2.4-3.08-3.22-3.68.96.32,8.26,2.92,10.92,10.53,1.75,5.01.51,9.4,0,10.92,1.12-1.89,3.34-5.01,7.2-7.47,6.71-4.26,13.65-3.49,15.69-3.19-.93.37-1.95.84-3.03,1.45-.73.41-1.39.84-1.97,1.25.72.14,1.45.29,2.17.43-1.31.19-2.8.51-4.41,1.02-.96.31-1.84.64-2.63.99l3.06.82c-.94.28-2.33.66-4.05.99-2.07.4-3.33.47-3.36.79-.02.21.48.54,2.86,1.09-.82-.06-2.87-.11-5.03,1.09-1.79.99-2.79,2.36-3.22,3.06,1.28-.89,6.21-4.11,12.8-3.26,9.59,1.24,13.97,9.96,14.31,10.66-.88-.22-2.16-.65-3.5-1.53-1.1-.72-1.89-1.5-2.42-2.12.24.41.53,1.03.64,1.83.04.31.06.59.05.84-.88-.38-1.83-.85-2.81-1.43-2.02-1.2-3.6-2.53-4.79-3.7.7.7,1.44,1.61,2.07,2.76.15.27.28.53.39.79-.92-.34-1.92-.76-2.96-1.28-1.64-.83-3.02-1.72-4.14-2.57.52.34,1.61,1.16,2.02,2.57.08.28.13.54.15.79-.72-.2-1.5-.46-2.32-.79-1.62-.66-2.95-1.44-4-2.17.79.79,1.58,1.58,2.37,2.37-.52-.03-1.05-.06-1.58-.1-2.2-.16-4.3-.39-6.32-.69,1.24-.04,9.16-.2,15.2,6.12,5.36,5.61,5.5,12.4,5.49,13.85-.63-.36-2.09-1.32-3.03-3.19-.66-1.33-.78-2.56-.79-3.26-.2.37-.42.84-.59,1.41-.2.68-.27,1.28-.3,1.74-.44-.6-.99-1.47-1.41-2.6-.39-1.05-.56-1.99-.63-2.7-.16.2-.47.63-.59,1.25-.11.55-.03,1.01.03,1.25-.44-.6-.88-1.25-1.32-1.97-.88-1.46-1.53-2.86-2.01-4.11-.12.2-.26.52-.33.92-.11.64.04,1.16.13,1.41-.42-.31-1.04-.82-1.58-1.61-.46-.68-.56-1.11-.95-1.84-.31-.57-.83-1.37-1.71-2.24-.01.33,0,.71.03,1.12.08.78.27,1.44.46,1.94-.49-.72-1.23-1.63-2.3-2.5-1.67-1.35-3.36-1.96-4.41-2.24,1.29.75,9.37,5.62,10.56,14.7.38,2.92-.06,5.45-.59,7.3-.44-.7-.89-1.54-1.28-2.52-.88-2.16-1.13-4.14-1.18-5.58-.21.13-.56.39-.84.84-.45.74-.38,1.49-.35,1.73-.26-.61-.54-1.45-.69-2.47-.17-1.16-.1-2.15,0-2.86-.17.05-.85.28-1.23.99-.22.4-.25.78-.25.99-.52-.81-1.12-1.91-1.58-3.29-.65-1.96-.75-3.69-.72-4.87-.19,1.12-.37,2.24-.56,3.36-.16-.81-.5-2.01-1.25-3.29-.9-1.52-1.99-2.49-2.7-3.03.57.99,5.71,10.19,1.38,18.32-1.13,2.12-2.64,3.67-4.05,4.79-.05-.88-.15-2.22-.35-3.85-.21-1.68-.34-2.16-.2-2.86.17-.85.77-2.19,3.11-3.5-.1-.07-.81-.58-1.73-.35-1.04.27-1.4,1.26-1.43,1.33.09-.76.23-1.59.44-2.47.43-1.8,1.03-3.32,1.63-4.54-.28.12-.82.4-1.28.99-.36.45-.52.91-.59,1.18-.05-.59-.07-1.24-.05-1.92.07-2.06.55-3.79,1.04-5.08-.14.16-.29.33-.43.53-.4.55-.67,1.08-.86,1.55-.1-.61-.18-1.32-.2-2.11-.02-1.01.07-1.9.2-2.63-.28.11-.64.29-.99.59-.86.74-1.11,1.69-1.18,2.07-7.6,21.54-12.06,40.1-14.8,54.18-3.27,16.8-4.84,31.05-5.72,39.28-1.2,11.11-1.87,20.62-2.27,27.93-2.27.2-4.54.39-6.81.59                  l1.38-28.91Z"
@@ -761,9 +626,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               {/* Cacti & Trunks (cls-28) */}
               {/* Cacti - Fade in and slide up */}
               <g id="trees-plants-cacti" style={{ 
-                display: visibility['trees-plants']['cacti'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['trees-plants']['cacti'], 0.55, 0.65) 
-              }} transform={getAnimatedTransform(position['trees-plants']['cacti'].x, position['trees-plants']['cacti'].y, 0.55, 0.65, 0, 50)}>
+                
+                opacity: getAnimatedOpacity(100, 0.55, 0.65) 
+              }} transform={getAnimatedTransform(0, 0, 0.55, 0.65, 0, 50)}>
                   <path
                     className="cls-28"
                     d="M963.12,1004.15c2.98-104.59,1.41-156.97-2.21-181.75-1.06-7.28-5.51-34.19,4.42-39.22,0,0,2.58-1.31,6.08-.55,8.85,1.92,16.25,47.05,13.26,218.76l-21.54,2.76Z"
@@ -794,9 +659,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               {/* Ground Vegetation (cls-35) */}
               {/* Ground Vegetation - Fade in and slide up */}
               <g id="trees-plants-ground-vegetation" style={{ 
-                display: visibility['trees-plants']['ground-vegetation'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['trees-plants']['ground-vegetation'], 0.6, 0.7) 
-              }} transform={getAnimatedTransform(position['trees-plants']['ground-vegetation'].x, position['trees-plants']['ground-vegetation'].y, 0.6, 0.7, 0, 40)}>
+                
+                opacity: getAnimatedOpacity(100, 0.6, 0.7) 
+              }} transform={getAnimatedTransform(0, 0, 0.6, 0.7, 0, 40)}>
             <path
               className="cls-35"
               d="M60.31,864.37l-2.24-60.75,11.48-.84c1.99-.64,4.86-1.89,7.28-4.48,5.72-6.11,4.52-14.98,3.36-23.52-.87-6.41-1.57-11.59-5.11-12.88-2.6-.95-6.28.37-7.77,2.8-1.51,2.46,0,4.77,1.4,12.04,2.07,10.8.78,12.81.28,13.44-1.84,2.33-5.9,3.46-8.4,2.1-4.26-2.32-3.28-11.45-2.24-21.14,3.99-37.29,5.87-56,.42-59.21-2.81-1.66-6.28-.31-7,0-6.21,2.64-7.32,12.49-8.68,26.74-1.37,14.34-2.41,27.22-3.22,38.36-.97-.3-2.34-.89-3.5-2.1-5.41-5.65,1.39-17.03-3.78-21.42-1.2-1.02-2.76-1.43-4.06-1.26-3.7.47-6.85,5.82-7.7,13.58-1.58,7.92,1.05,15.81,6.86,20.3,5.09,3.93,10.83,3.88,12.74,3.78-.19,3.64-.37,7.28-.56,10.92-.95-.59-10.2-6.31-12.88-3.64-.6.6-.67,1.43-.7,1.82-.42,5.88,12.62,12.17,14.42,13.02-.09,17.54-.19,35.09-.28,52.63l19.88-.28Z"
@@ -855,9 +720,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
             {/* Stones/Rocks */}
             {/* Stones - Fade in */}
             <g id="stones" style={{ 
-              display: visibility['stones'] ? 'block' : 'none', 
-              opacity: getAnimatedOpacity(opacity['stones'], 0.65, 0.75) 
-            }} transform={`translate(${position['stones'].x}, ${position['stones'].y})`}>
+              
+              opacity: getAnimatedOpacity(100, 0.65, 0.75) 
+            }}>
             <g>
                 <path
                   className="cls-39"
@@ -908,12 +773,12 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
             </g>
             </g>
             {/* Tents & Campfire */}
-            <g id="tents-campfire" style={{ display: isGroupVisible(visibility['tents-campfire']) ? 'block' : 'none' }}>
+            <g id="tents-campfire" style={{  }}>
               {/* Tent 1 - Fade in and slide up */}
               <g id="tents-campfire-tent-1" style={{ 
-                display: visibility['tents-campfire']['tent-1'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['tents-campfire']['tent-1'], 0.7, 0.8) 
-              }} transform={getAnimatedTransform(position['tents-campfire']['tent-1'].x, position['tents-campfire']['tent-1'].y, 0.7, 0.8, 0, 30)}>
+                
+                opacity: getAnimatedOpacity(100, 0.7, 0.8) 
+              }} transform={getAnimatedTransform(0, 0, 0.7, 0.8, 0, 30)}>
                 <g>
                   <path
                     className="cls-37"
@@ -969,9 +834,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Tent 2 - Fade in and slide up */}
               <g id="tents-campfire-tent-2" style={{ 
-                display: visibility['tents-campfire']['tent-2'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['tents-campfire']['tent-2'], 0.72, 0.82) 
-              }} transform={getAnimatedTransform(position['tents-campfire']['tent-2'].x, position['tents-campfire']['tent-2'].y, 0.72, 0.82, 0, 30)}>
+                
+                opacity: getAnimatedOpacity(100, 0.72, 0.82) 
+              }} transform={getAnimatedTransform(0, 0, 0.72, 0.82, 0, 30)}>
                 <g>
                   <path
                     className="cls-37"
@@ -1027,9 +892,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Tent 3 - Fade in and slide up */}
               <g id="tents-campfire-tent-3" style={{ 
-                display: visibility['tents-campfire']['tent-3'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['tents-campfire']['tent-3'], 0.74, 0.84) 
-              }} transform={getAnimatedTransform(position['tents-campfire']['tent-3'].x, position['tents-campfire']['tent-3'].y, 0.74, 0.84, 0, 30)}>
+                
+                opacity: getAnimatedOpacity(100, 0.74, 0.84) 
+              }} transform={getAnimatedTransform(0, 0, 0.74, 0.84, 0, 30)}>
                 <g>
                   <path
                     className="cls-37"
@@ -1085,9 +950,9 @@ const SVGComponent: React.FC<SVGComponentProps> = ({ layerVisibility, layerOpaci
               </g>
               {/* Campfire - Fade in */}
               <g id="tents-campfire-campfire" ref={campfireRef} style={{ 
-                display: visibility['tents-campfire']['campfire'] ? 'block' : 'none', 
-                opacity: getAnimatedOpacity(opacity['tents-campfire']['campfire'], 0.76, 0.86) 
-              }} transform={`translate(${position['tents-campfire']['campfire'].x}, ${position['tents-campfire']['campfire'].y})`}>
+                
+                opacity: getAnimatedOpacity(100, 0.76, 0.86) 
+              }}>
                 <g>
                   <ellipse
                 className="cls-33"
