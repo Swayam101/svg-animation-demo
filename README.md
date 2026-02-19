@@ -4,6 +4,7 @@ A React + TypeScript project featuring scroll-based SVG animations with GSAP-pow
 
 ## Features
 
+- **Animated Hero Section**: Beautiful text animations with gradient effects and scroll indicators
 - **Scroll-Based Animation**: SVG elements fade in and slide into view as you scroll
 - **GSAP Campfire Animation**: Realistic flickering flames, rising smoke, and glowing embers
 - **Responsive**: Full-screen SVG that adapts to viewport size
@@ -13,15 +14,30 @@ A React + TypeScript project featuring scroll-based SVG animations with GSAP-pow
 
 ```
 src/
-├── App.tsx              # Main app with scroll container
+├── App.tsx              # Main app with scroll container & component composition
 ├── components/
-│   └── Slide1.tsx       # SVG component with all animations
+│   ├── Slide1.tsx       # SVG background with scroll animations
+│   └── Hero.tsx         # Hero text overlay with animations
 ├── assets/
 │   └── slide1.svg       # Original SVG file
 └── index.css            # Global styles
 ```
 
 ## Animation Breakdown
+
+### Hero Text Animations
+Text elements animate based on scroll position with staggered timing:
+
+- **Main Heading** (5-15%): "Under the Stars" fades in with gradient gold colors and upward motion
+- **Subheading** (10-20%): Blue glowing text describing the experience
+- **Description** (15-25%): Detailed text with subtle animations
+- **CTA Button** (25-35%): Call-to-action button with scale and fade effects
+- **Scroll Indicator** (5-15%): Bouncing arrow that fades out as you scroll
+
+**Color Scheme:**
+- Warm gradients: `#faf3c9` → `#f8e28d` → `#eea445` (campfire glow)
+- Cool blues: `#416cc8`, `#5081c9`, `#719cc6` (night sky)
+- Deep navy: `#0d225b`, `#0e225f` (background)
 
 ### Scroll Animations
 Elements animate based on scroll position (0-100%):
@@ -87,10 +103,31 @@ npm run build
 
 ## Technologies
 
-- **React 18** - UI framework
+- **React 19** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool
-- **GSAP 3.12** - Animation library
+- **GSAP 3.14** - Animation library
+
+## Component Architecture
+
+### App.tsx
+Main container that orchestrates the layout:
+- Sets up scroll container (300vh height)
+- Positions sticky viewport
+- Layers Slide1 (background) + Hero (overlay)
+
+### Slide1.tsx
+SVG background component with scroll-based animations:
+- Manages scroll progress state
+- Animates SVG elements based on scroll
+- Contains GSAP campfire effects (flames, smoke, embers)
+
+### Hero.tsx
+Text overlay component with scroll-based animations:
+- Independent scroll progress tracking
+- Animated heading, subheading, description
+- CTA button with hover effects
+- Scroll indicator with bounce animation
 
 ## Demo Files
 
