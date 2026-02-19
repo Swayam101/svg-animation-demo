@@ -92,34 +92,6 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
   };
 
 
-  // Animation helper functions (for future use)
-  const getAnimatedOpacity = (baseOpacity: number, startProgress: number, endProgress: number) => {
-    if (scrollProgress < startProgress) return 0;
-    if (scrollProgress > endProgress) return baseOpacity / 100;
-    const animProgress = (scrollProgress - startProgress) / (endProgress - startProgress);
-    return (baseOpacity / 100) * animProgress;
-  };
-
-  const getAnimatedTransform = (
-    baseX: number,
-    baseY: number,
-    startProgress: number,
-    endProgress: number,
-    fromX: number = 0,
-    fromY: number = 0
-  ) => {
-    if (scrollProgress < startProgress) {
-      return `translate(${baseX + fromX}, ${baseY + fromY})`;
-    }
-    if (scrollProgress > endProgress) {
-      return `translate(${baseX}, ${baseY})`;
-    }
-    const animProgress = (scrollProgress - startProgress) / (endProgress - startProgress);
-    const currentX = baseX + fromX * (1 - animProgress);
-    const currentY = baseY + fromY * (1 - animProgress);
-    return `translate(${currentX}, ${currentY})`;
-  };
-
   // GSAP campfire animations
   const campfireRef = useRef<SVGGElement>(null);
   const moonRef = useRef<SVGGElement>(null);
