@@ -1,6 +1,15 @@
 import * as React from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { gsap } from "gsap";
+import { scopeCss } from "../utils/scopedCss";
+import { SLIDE1 } from "../constants/timeline";
+import { easeOut } from "../utils/easing";
+
+const SCOPE_ID = "slide1-svg";
+const SLIDE1_SCOPED_CSS = scopeCss(
+  "\n      .cls-1 {\n        fill: #68423e;\n      }\n\n      .cls-2 {\n        fill: #5c382c;\n      }\n\n      .cls-3 {\n        fill: url(#linear-gradient-2);\n      }\n\n      .cls-4 {\n        fill: #5a5069;\n        opacity: .38;\n      }\n\n      .cls-5 {\n        opacity: .84;\n      }\n\n      .cls-5, .cls-6 {\n        mix-blend-mode: screen;\n      }\n\n      .cls-7, .cls-8 {\n        fill: #8c543b;\n      }\n\n      .cls-9 {\n        fill: #eea445;\n      }\n\n      .cls-10 {\n        mask: url(#mask);\n      }\n\n      .cls-11 {\n        fill: #844c38;\n        stroke: #734a44;\n      }\n\n      .cls-11, .cls-12, .cls-13, .cls-8, .cls-14, .cls-15 {\n        stroke-miterlimit: 10;\n      }\n\n      .cls-16 {\n        fill: #4b221e;\n      }\n\n      .cls-17 {\n        opacity: .52;\n      }\n\n      .cls-17, .cls-18 {\n        fill: #f8e28d;\n      }\n\n      .cls-19 {\n        fill: url(#linear-gradient-4);\n      }\n\n      .cls-20 {\n        fill: #63361f;\n      }\n\n      .cls-21 {\n        fill: url(#linear-gradient-3);\n      }\n\n      .cls-22 {\n        fill: url(#linear-gradient-5);\n      }\n\n      .cls-23 {\n        fill: #663c32;\n      }\n\n      .cls-24 {\n        isolation: isolate;\n      }\n\n      .cls-25 {\n        fill: url(#linear-gradient-8);\n      }\n\n      .cls-12 {\n        fill: #7d452c;\n        stroke: #351e0b;\n      }\n\n      .cls-12, .cls-13, .cls-14 {\n        stroke-width: .25px;\n      }\n\n      .cls-26 {\n        fill: #0d1c47;\n      }\n\n      .cls-13 {\n        fill: #f2a849;\n        stroke: #b46721;\n      }\n\n      .cls-27 {\n        fill: #412c3b;\n      }\n\n      .cls-28 {\n        fill: #162d57;\n      }\n\n      .cls-29 {\n        fill: url(#linear-gradient-7);\n      }\n\n      .cls-30 {\n        fill: #b46721;\n      }\n\n      .cls-31 {\n        fill: url(#linear-gradient-6);\n      }\n\n      .cls-32 {\n        fill: #faf3c9;\n      }\n\n      .cls-8, .cls-15 {\n        stroke: #5c382c;\n      }\n\n      .cls-33 {\n        fill: #d08240;\n      }\n\n      .cls-14 {\n        fill: #a15f3d;\n        stroke: #683e2c;\n      }\n\n      .cls-34 {\n        fill: #3f2d39;\n      }\n\n      .cls-35 {\n        fill: #2c4a80;\n      }\n\n      .cls-36 {\n        filter: url(#luminosity-invert);\n      }\n\n      .cls-37 {\n        fill: #bc6650;\n        opacity: .83;\n      }\n\n      .cls-38 {\n        fill: url(#linear-gradient);\n      }\n\n      .cls-39 {\n        fill: #4f2f34;\n      }\n\n      .cls-40 {\n        fill: #784a3a;\n      }\n\n      .cls-41 {\n        fill: #6d4038;\n      }\n\n      .cls-15 {\n        fill: #b16e43;\n        stroke-width: .5px;\n      }\n\n      .cls-6 {\n        fill: #fffef8;\n        opacity: .75;\n      }\n\n      @keyframes starTwinkle { \n        0%, 100% { opacity: 0.35; } \n        50% { opacity: 1; } \n      }\n      #stars circle, #stars ellipse { \n        animation: starTwinkle 1.8s ease-in-out infinite; \n      }\n      #stars circle:nth-child(3n), #stars ellipse:nth-child(3n) { \n        animation-delay: 0.2s; \n      }\n      #stars circle:nth-child(5n+1), #stars ellipse:nth-child(5n+1) { \n        animation-delay: 0.6s; \n      }\n      #stars circle:nth-child(7n+2), #stars ellipse:nth-child(7n+2) { \n        animation-delay: 1s; \n      }\n      #stars circle:nth-child(2n), #stars ellipse:nth-child(2n) { \n        animation-duration: 2.2s; \n      }\n    ",
+  SCOPE_ID
+);
 
 interface SVGComponentProps extends React.SVGProps<SVGSVGElement> {
   scrollProgress?: number;
@@ -8,93 +17,120 @@ interface SVGComponentProps extends React.SVGProps<SVGSVGElement> {
 
 const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress = 0, ...props }) => {
 
-  // Scroll-based EXIT animations
-  // Moon - rises during Section 1 + Section 2, holds at peak height after
-  const getMoonYOffset = () => {
-    const riseStart  = 0.15;
-    const riseEnd    = 0.60;
-    const baseOffset = 80;   // pushes initial position lower
-    const maxOffset  = -280;
+  const { CURTAIN_COVERS } = SLIDE1;
+  const { GROUND_MIDDLE_EXIT_START, GROUND_MIDDLE_EXIT_END, GROUND_MIDDLE_ENTRY_START, GROUND_MIDDLE_ENTRY_END } = SLIDE1;
+  const { GROUND_UPPER_EXIT_START, GROUND_UPPER_EXIT_END, GROUND_UPPER_ENTRY_START, GROUND_UPPER_ENTRY_END } = SLIDE1;
+  const { GROUND_FRONT_EXIT_START, GROUND_FRONT_EXIT_END, GROUND_FRONT_ENTRY_START, GROUND_FRONT_ENTRY_END } = SLIDE1;
 
-    if (scrollProgress < riseStart) return baseOffset;
-    if (scrollProgress > riseEnd)   return maxOffset;
-    const p = (scrollProgress - riseStart) / (riseEnd - riseStart);
-    return baseOffset + (maxOffset - baseOffset) * p;
-  };
+  const scrollValues = useMemo(() => {
+    // Moon oscillates up/down on every section change: up in sections, down during transitions
+    const getMoonYOffset = () => {
+      const low = 80;
+      const high = -220;
+      const p = scrollProgress;
 
-  // Moon - grows to peak through Section 2, then shrinks back to normal
-  const getMoonScale = () => {
-    const growStart   = 0.15; const growEnd   = 0.60;
-    const shrinkStart = 0.60; const shrinkEnd = 0.78;
-    const minScale  = 0.5;
-    const peakScale = 1.1;
+      // UP: 0.00-0.05 (desert), 0.15-0.40 (construction), 0.55-0.65 (city)
+      // DOWN: 0.05-0.15 (curtain 1), 0.40-0.55 (curtain 2), 0.65-1.00 (metro)
+      if (p <= 0.05) {
+        const t = easeOut(p / 0.05);
+        return low + (high - low) * t;
+      }
+      if (p <= 0.15) {
+        const t = easeOut((p - 0.05) / 0.10);
+        return high + (low - high) * t;
+      }
+      if (p <= 0.40) {
+        const t = easeOut((p - 0.15) / 0.25);
+        return low + (high - low) * t;
+      }
+      if (p <= 0.55) {
+        const t = easeOut((p - 0.40) / 0.15);
+        return high + (low - high) * t;
+      }
+      if (p <= 0.65) {
+        const t = easeOut((p - 0.55) / 0.10);
+        return low + (high - low) * t;
+      }
+      if (p <= 1) {
+        const t = easeOut((p - 0.65) / 0.35);
+        return high + (low - high) * t;
+      }
+      return low;
+    };
 
-    if (scrollProgress < growStart)  return minScale;
-    if (scrollProgress <= growEnd) {
-      const p = (scrollProgress - growStart) / (growEnd - growStart);
-      return minScale + (peakScale - minScale) * p;
-    }
-    if (scrollProgress <= shrinkEnd) {
-      const p = (scrollProgress - shrinkStart) / (shrinkEnd - shrinkStart);
-      return peakScale - (peakScale - minScale) * p;
-    }
-    return minScale;
-  };
+    const getMoonScale = () => {
+      const minScale = 0.5;
+      const peakScale = 1.1;
+      // Scale follows Y: bigger when up, smaller when down
+      const yOffset = getMoonYOffset();
+      const low = 80;
+      const high = -220;
+      const t = (yOffset - low) / (high - low);
+      return minScale + (peakScale - minScale) * Math.max(0, Math.min(1, t));
+    };
 
-  // Curtain covers scene at 0.27 — all Slide1 elements snap invisible then
-  const getTent1ExitOpacity    = () => scrollProgress < 0.27 ? 1 : 0;
-  const getCampfireExitOpacity = () => scrollProgress < 0.27 ? 1 : 0;
-  const getStonesExitOpacity   = () => scrollProgress < 0.27 ? 1 : 0;
-  const getStoreExitOpacity    = () => scrollProgress < 0.27 ? 1 : 0;
+    const exitOpacity = scrollProgress < CURTAIN_COVERS ? 1 : 0;
 
-  // Ground layer exit animations - staggered "grow down" during Slide2 exit (0.63 → 0.75)
-  // Each layer exits at a slightly different time for a natural cascading effect.
+    const getGroundBackMiddleExit = () => {
+      const dist = 350;
+      if (scrollProgress < GROUND_MIDDLE_EXIT_START) return 0;
+      if (scrollProgress <= GROUND_MIDDLE_EXIT_END) return dist * easeOut((scrollProgress - GROUND_MIDDLE_EXIT_START) / (GROUND_MIDDLE_EXIT_END - GROUND_MIDDLE_EXIT_START));
+      if (scrollProgress < GROUND_MIDDLE_ENTRY_START) return dist;
+      if (scrollProgress <= GROUND_MIDDLE_ENTRY_END) return dist * (1 - easeOut((scrollProgress - GROUND_MIDDLE_ENTRY_START) / (GROUND_MIDDLE_ENTRY_END - GROUND_MIDDLE_ENTRY_START)));
+      return 0;
+    };
 
-  // Exit order: middle first → upper → front last
-  // Re-entry mirrors exit: front first (it exited last) → upper → middle last (it exited first)
+    const getGroundBackUpperExit = () => {
+      const dist = 400;
+      if (scrollProgress < GROUND_UPPER_EXIT_START) return 0;
+      if (scrollProgress <= GROUND_UPPER_EXIT_END) return dist * easeOut((scrollProgress - GROUND_UPPER_EXIT_START) / (GROUND_UPPER_EXIT_END - GROUND_UPPER_EXIT_START));
+      if (scrollProgress < GROUND_UPPER_ENTRY_START) return dist;
+      if (scrollProgress <= GROUND_UPPER_ENTRY_END) return dist * (1 - easeOut((scrollProgress - GROUND_UPPER_ENTRY_START) / (GROUND_UPPER_ENTRY_END - GROUND_UPPER_ENTRY_START)));
+      return 0;
+    };
 
-  // Ground bg exit starts when Phase 2 curtain RISES (0.65)
-  // Ground bg re-entry starts when Phase 2 curtain FALLS (0.84)
+    const getGroundBackFrontExit = () => {
+      const dist = 450;
+      if (scrollProgress < GROUND_FRONT_EXIT_START) return 0;
+      if (scrollProgress <= GROUND_FRONT_EXIT_END) return dist * easeOut((scrollProgress - GROUND_FRONT_EXIT_START) / (GROUND_FRONT_EXIT_END - GROUND_FRONT_EXIT_START));
+      if (scrollProgress < GROUND_FRONT_ENTRY_START) return dist;
+      if (scrollProgress <= GROUND_FRONT_ENTRY_END) return dist * (1 - easeOut((scrollProgress - GROUND_FRONT_ENTRY_START) / (GROUND_FRONT_ENTRY_END - GROUND_FRONT_ENTRY_START)));
+      return 0;
+    };
 
-  // Middle: first to exit, last to re-enter
-  // Exit under rising curtain (0.65→0.70), re-enter under curtain hold (0.70→0.84)
-  // Re-entry order: front first → upper → middle last, all done by 0.80
-  const getGroundBackMiddleExit = () => {
-    const exitS = 0.65; const exitE = 0.72; const dist = 350;
-    const entryS = 0.76; const entryE = 0.82;
-    if (scrollProgress < exitS) return 0;
-    if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    if (scrollProgress < entryS) return dist;
-    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
-    return 0;
-  };
-
-  // Upper: second to exit, second to re-enter
-  const getGroundBackUpperExit = () => {
-    const exitS = 0.67; const exitE = 0.74; const dist = 400;
-    const entryS = 0.73; const entryE = 0.79;
-    if (scrollProgress < exitS) return 0;
-    if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    if (scrollProgress < entryS) return dist;
-    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
-    return 0;
-  };
-
-  // Front: last to exit, first to re-enter
-  const getGroundBackFrontExit = () => {
-    const exitS = 0.69; const exitE = 0.76; const dist = 450;
-    const entryS = 0.70; const entryE = 0.76;
-    if (scrollProgress < exitS) return 0;
-    if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    if (scrollProgress < entryS) return dist;
-    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
-    return 0;
-  };
+    return {
+      moonYOffset: getMoonYOffset(),
+      moonScale: getMoonScale(),
+      tent1ExitOpacity: exitOpacity,
+      campfireExitOpacity: exitOpacity,
+      stonesExitOpacity: exitOpacity,
+      storeExitOpacity: exitOpacity,
+      groundBackMiddleExit: getGroundBackMiddleExit(),
+      groundBackUpperExit: getGroundBackUpperExit(),
+      groundBackFrontExit: getGroundBackFrontExit(),
+    };
+  }, [
+    scrollProgress,
+    CURTAIN_COVERS,
+    GROUND_MIDDLE_EXIT_START,
+    GROUND_MIDDLE_EXIT_END,
+    GROUND_MIDDLE_ENTRY_START,
+    GROUND_MIDDLE_ENTRY_END,
+    GROUND_UPPER_EXIT_START,
+    GROUND_UPPER_EXIT_END,
+    GROUND_UPPER_ENTRY_START,
+    GROUND_UPPER_ENTRY_END,
+    GROUND_FRONT_EXIT_START,
+    GROUND_FRONT_EXIT_END,
+    GROUND_FRONT_ENTRY_START,
+    GROUND_FRONT_ENTRY_END,
+  ]);
 
 
   // GSAP campfire animations
   const campfireRef = useRef<SVGGElement>(null);
   const moonRef = useRef<SVGGElement>(null);
+  const campfireTargetsRef = useRef<Element[]>([]);
 
   useEffect(() => {
     if (!campfireRef.current) return;
@@ -231,6 +267,8 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
       });
     }
 
+    campfireTargetsRef.current = [smoke, flameMain, flameInner, flameTips, logCenter, ...Array.from(embers)].filter(Boolean) as Element[];
+
     // Cleanup
     return () => {
       gsap.killTweensOf([smoke, flameMain, flameInner, flameTips, logCenter, ...Array.from(embers)]);
@@ -272,6 +310,13 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
     };
   }, []);
 
+  // Pause campfire GSAP when hidden (curtain covers at 0.05). Moon glow runs start-to-end.
+  useEffect(() => {
+    const shouldPause = scrollProgress >= CURTAIN_COVERS;
+    campfireTargetsRef.current.forEach((el) => {
+      gsap.getTweensOf(el).forEach((t) => (shouldPause ? t.pause() : t.resume()));
+    });
+  }, [scrollProgress, CURTAIN_COVERS]);
 
   return (
   <svg
@@ -289,11 +334,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
     {...props}
   >
     <defs>
-      <style>
-        {(
-          "\n      .cls-1 {\n        fill: #68423e;\n      }\n\n      .cls-2 {\n        fill: #5c382c;\n      }\n\n      .cls-3 {\n        fill: url(#linear-gradient-2);\n      }\n\n      .cls-4 {\n        fill: #5a5069;\n        opacity: .38;\n      }\n\n      .cls-5 {\n        opacity: .84;\n      }\n\n      .cls-5, .cls-6 {\n        mix-blend-mode: screen;\n      }\n\n      .cls-7, .cls-8 {\n        fill: #8c543b;\n      }\n\n      .cls-9 {\n        fill: #eea445;\n      }\n\n      .cls-10 {\n        mask: url(#mask);\n      }\n\n      .cls-11 {\n        fill: #844c38;\n        stroke: #734a44;\n      }\n\n      .cls-11, .cls-12, .cls-13, .cls-8, .cls-14, .cls-15 {\n        stroke-miterlimit: 10;\n      }\n\n      .cls-16 {\n        fill: #4b221e;\n      }\n\n      .cls-17 {\n        opacity: .52;\n      }\n\n      .cls-17, .cls-18 {\n        fill: #f8e28d;\n      }\n\n      .cls-19 {\n        fill: url(#linear-gradient-4);\n      }\n\n      .cls-20 {\n        fill: #63361f;\n      }\n\n      .cls-21 {\n        fill: url(#linear-gradient-3);\n      }\n\n      .cls-22 {\n        fill: url(#linear-gradient-5);\n      }\n\n      .cls-23 {\n        fill: #663c32;\n      }\n\n      .cls-24 {\n        isolation: isolate;\n      }\n\n      .cls-25 {\n        fill: url(#linear-gradient-8);\n      }\n\n      .cls-12 {\n        fill: #7d452c;\n        stroke: #351e0b;\n      }\n\n      .cls-12, .cls-13, .cls-14 {\n        stroke-width: .25px;\n      }\n\n      .cls-26 {\n        fill: #0d1c47;\n      }\n\n      .cls-13 {\n        fill: #f2a849;\n        stroke: #b46721;\n      }\n\n      .cls-27 {\n        fill: #412c3b;\n      }\n\n      .cls-28 {\n        fill: #162d57;\n      }\n\n      .cls-29 {\n        fill: url(#linear-gradient-7);\n      }\n\n      .cls-30 {\n        fill: #b46721;\n      }\n\n      .cls-31 {\n        fill: url(#linear-gradient-6);\n      }\n\n      .cls-32 {\n        fill: #faf3c9;\n      }\n\n      .cls-8, .cls-15 {\n        stroke: #5c382c;\n      }\n\n      .cls-33 {\n        fill: #d08240;\n      }\n\n      .cls-14 {\n        fill: #a15f3d;\n        stroke: #683e2c;\n      }\n\n      .cls-34 {\n        fill: #3f2d39;\n      }\n\n      .cls-35 {\n        fill: #2c4a80;\n      }\n\n      .cls-36 {\n        filter: url(#luminosity-invert);\n      }\n\n      .cls-37 {\n        fill: #bc6650;\n        opacity: .83;\n      }\n\n      .cls-38 {\n        fill: url(#linear-gradient);\n      }\n\n      .cls-39 {\n        fill: #4f2f34;\n      }\n\n      .cls-40 {\n        fill: #784a3a;\n      }\n\n      .cls-41 {\n        fill: #6d4038;\n      }\n\n      .cls-15 {\n        fill: #b16e43;\n        stroke-width: .5px;\n      }\n\n      .cls-6 {\n        fill: #fffef8;\n        opacity: .75;\n      }\n\n      @keyframes starTwinkle { \n        0%, 100% { opacity: 0.35; } \n        50% { opacity: 1; } \n      }\n      #stars circle, #stars ellipse { \n        animation: starTwinkle 1.8s ease-in-out infinite; \n      }\n      #stars circle:nth-child(3n), #stars ellipse:nth-child(3n) { \n        animation-delay: 0.2s; \n      }\n      #stars circle:nth-child(5n+1), #stars ellipse:nth-child(5n+1) { \n        animation-delay: 0.6s; \n      }\n      #stars circle:nth-child(7n+2), #stars ellipse:nth-child(7n+2) { \n        animation-delay: 1s; \n      }\n      #stars circle:nth-child(2n), #stars ellipse:nth-child(2n) { \n        animation-duration: 2.2s; \n      }\n    ").replace(/\.cls-/g, '#slide1-svg .cls-')
-        }
-      </style>
+      <style>{SLIDE1_SCOPED_CSS}</style>
       <linearGradient
         id="linear-gradient"
         x1={771.34}
@@ -564,8 +605,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
             {/* Moon - grows and moves up as scroll progresses */}
             <g id="clouds-decorative" style={{ 
               transformOrigin: '800.22px 456.82px',
-              transform: `translateY(${getMoonYOffset()}px) scale(${getMoonScale()})`,
-              transition: 'transform 0.3s ease-out'
+              transform: `translateY(${scrollValues.moonYOffset}px) scale(${scrollValues.moonScale})`
             }}>
               <image
                 className="cls-5"
@@ -592,7 +632,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
           
              
               {/* Middle Landscape */}
-              <g id="ground-back-middle-landscape" style={{ transform: `translateY(${getGroundBackMiddleExit()}px)`, transition: 'transform 0.1s ease-out' }}>
+              <g id="ground-back-middle-landscape" style={{ transform: `translateY(${scrollValues.groundBackMiddleExit}px)` }}>
                 <path
                   className="cls-19"
                   d="M2.32,474.18c61.13-22.66,109.44-41.59,140.94-54.13,69.01-27.47,86.79-36.01,118.47-34.72,23.29.95,51.78,11.52,108.77,32.68,64.21,23.84,63.24,28.55,92.43,34.72,46.99,9.94,52.02-1.74,105.19,8.17,28.73,5.36,49.55,12.92,89.87,27.57,32.62,11.85,59.13,23.26,77.62,31.66,12.09,7.83,24.17,15.66,36.26,23.49,3.14-3.51,8.01-7.73,14.3-8.17,7.01-.5,11.49,4.01,19.4,8.17,0,0,6.52,3.43,27.57,7.66,26.27,5.28,87.79-6.29,102.13-8.68,81.43-13.59,111.72,23.18,172.85,7.91,6.3-1.57,26.05-6.98,52.85-6.89,20.67.06,35.89,3.36,38.3,3.83,26.03,5.08,122.35,50.61,342.13-26.3,0,33.7-6.13,1.02-6.13,34.72-240.13,35.19-522.5,59.65-838.47,55.15-257.42-3.67-490.84-25.89-695.49-56.17.34-26.89.68-53.79,1.02-80.68Z"
@@ -603,14 +643,14 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
                 />
               </g>
               {/* Upper Terrain */}
-              <g id="ground-back-upper-terrain" style={{ transform: `translateY(${getGroundBackUpperExit()}px)`, transition: 'transform 0.1s ease-out' }}>
+              <g id="ground-back-upper-terrain" style={{ transform: `translateY(${scrollValues.groundBackUpperExit}px)` }}>
                 <path
                   className="cls-31"
                   d="M1542.15,485.21c-.51,36.85-1.02,73.7-1.54,110.55-210.53,33.85-456.16,59.37-730.37,62.36-306.92,3.34-579.69-22.32-809.2-57.84-.17-40.24-.34-80.47-.51-120.71,33.66,2.58,45.8,5.03,49.26,7.04.55.32,3.41,2.09,5.25,1.02,1.75-1.01,1.14-3.76,2.94-4.61,1.6-.75,2.75,1.1,4.73.64,2.8-.64,2.51-4.79,5.12-5.89,2.68-1.13,4.47,2.6,9.47,3.84,7.36,1.82,12.15-4.13,15.87-1.41,2.83,2.07,2.58,7.36,4.09,7.29.67-.03.76-1.06,2.18-1.79.94-.48,2.49-.84,3.45-.26,1.66,1.01.27,4.02,1.28,5.89,1.93,3.54,11,.09,21.5,0,13.6-.12,15.42,5.53,30.45,5.12,8.23-.22,7.3-1.9,14.59-2.05,14.14-.28,16.79,6.06,33.27,9.21,5.98,1.14,18.05,3.32,31.48-.77,9.82-2.99,9.42-5.99,16.89-6.65,11.44-1.02,13.99,5.87,27.64,5.12,4.67-.26,9.17-1.71,12.03,1.02,2.34,2.24,1.42,5.12,4.09,6.91,3.23,2.16,6.8-.54,8.7,1.54,1.79,1.95-1.06,5.01.51,7.42,2.34,3.59,10.76.19,13.05,3.71.95,1.46.46,3.48-.13,4.99,3.66.14,9.04,0,15.31-1.45,7.83-1.82,12.15-4.58,14.84-2.56,1.36,1.01,2.58,3.44,1.45,9.9,1.54-1.95,3.69-4.21,5.37-3.71,1.64.49,1.09,3.08,3.2,5.89,3.03,4.02,7.45,3.03,8.96,6.27.57,1.22.81,3.22-.9,6.57.02,3.84.94,5.18,1.88,5.63,1.23.6,2.44-.38,4.44.17,1.46.4,2.49,1.39,3.16,2.22.21-.66,1.41-4.24,4.61-5.37,4.93-1.76,10.91,3.63,10.75,6.91-.05.97-.65,2.02-.06,2.83.59.82,1.95.78,2.49.76,4.79-.2,7.71-5.14,9.21-4.48.8.35,1.18,2.3-.13,8.57,1.13-1.21,2.94-2.74,5.12-2.69,2.54.06,3.35,2.22,6.78,4.35,3.7,2.3,9.47,3.94,12.07,1.75,1.69-1.42.6-3.26,2.05-4.95,2.21-2.59,7.24-1.19,16.8.85,15.41,3.29,19.55,3.31,23.37,1.36,3.05-1.56,3.02-2.91,5.46-4.61,8.17-5.69,19.04,2.19,39.07,7.85,10.82,3.06,24.37,6.74,40.26,4.01,11.65-2,9.67-4.89,19.45-6.4,25.79-3.97,41.92,15.77,56.81,7.17,3.39-1.96,5.31-4.57,10.24-5.37,7.77-1.26,10.32,4.07,17.4,3.33,9.08-.95,10.73-10.32,17.91-9.72,5.56.46,6.1,6.2,12.8,8.7,7.66,2.86,14.3-1.88,21.5-4.09,15.6-4.81,28.45,3.9,42.23,8.45,13.99,4.62,35.53,7.1,67.56-3.84,33.83,2.06,59.83-2.76,77.54-7.68,48.81-13.55,81.11-40.7,118.74-27.64,6.19,2.15,10.92,4.83,13.82,6.65,4.2.57,10.16.69,16.21-2.05,3.17-1.44,4.17-2.67,7.34-4.09,5.83-2.63,9.48-1.64,17.06-2.05,9.21-.5,20.04-1.08,27.21-7.93,3.25-3.1,3.25-5.11,6.91-7.17,5.1-2.87,10.63-2.07,15.1-1.28,23.65,4.17,26.01,9.54,33.87,7.34,8.93-2.51,9.03-10.32,18.77-12.62,7.3-1.72,14.21,1.03,18.77,3.5.04-1.2.29-2.96,1.54-4.09,4.07-3.71,15.18,2.42,17.91,3.84,23.43,12.14,72.72,10.47,90.59,8.45,22.52-2.55,18.7-8.34,65-25.34,30.32-11.13,63.4-22.71,104.41-23.54,16.84-.34,41.69,1.01,71.66,9.72Z"
                 />
               </g>
               {/* Front Terrain */}
-              <g id="ground-back-front-terrain" style={{ transform: `translateY(${getGroundBackFrontExit()}px)`, transition: 'transform 0.1s ease-out' }}>
+              <g id="ground-back-front-terrain" style={{ transform: `translateY(${scrollValues.groundBackFrontExit}px)` }}>
                 <path
                   className="cls-29"
                   d="M2.32,562.1l1.53,110.3c210.04,33.77,455.1,59.24,728.68,62.21,306.21,3.33,578.35-22.27,807.32-57.7.17-40.14.34-80.28.51-120.43-33.58,2.58-45.69,5.02-49.15,7.02-.55.32-3.4,2.08-5.23,1.02-1.75-1.01-1.14-3.75-2.94-4.6-1.6-.75-2.75,1.09-4.72.64-2.79-.64-2.5-4.78-5.11-5.87-2.67-1.13-4.46,2.6-9.45,3.83-7.34,1.82-12.12-4.12-15.83-1.4-2.82,2.06-2.58,7.34-4.09,7.28-.67-.03-.76-1.06-2.17-1.79-.94-.48-2.49-.84-3.45-.26-1.65,1.01-.27,4.01-1.28,5.87-1.92,3.53-10.97.09-21.45,0-13.57-.12-15.38,5.52-30.38,5.11-8.21-.22-7.28-1.9-14.55-2.04-14.11-.28-16.75,6.04-33.19,9.19-5.96,1.14-18,3.31-31.4-.77-9.79-2.98-9.39-5.97-16.85-6.64-11.41-1.02-13.96,5.86-27.57,5.11-4.66-.26-9.15-1.7-12,1.02-2.34,2.23-1.41,5.1-4.09,6.89-3.22,2.16-6.78-.54-8.68,1.53-1.78,1.94,1.06,5-.51,7.4-2.34,3.58-10.73.18-13.02,3.7-.95,1.45-.45,3.47.13,4.98-3.65.14-9.02,0-15.28-1.45-7.82-1.82-12.12-4.57-14.81-2.55-1.35,1.01-2.58,3.44-1.45,9.87-1.54-1.95-3.69-4.2-5.36-3.7-1.64.48-1.08,3.07-3.19,5.87-3.02,4.01-7.43,3.03-8.94,6.26-.57,1.21-.81,3.21.89,6.55-.02,3.83-.94,5.17-1.87,5.62-1.23.59-2.43-.38-4.43.17-1.46.4-2.49,1.39-3.15,2.21-.21-.66-1.41-4.23-4.6-5.36-4.92-1.75-10.89,3.62-10.72,6.89.05.97.65,2.01.06,2.82-.59.82-1.94.78-2.49.75-4.78-.2-7.69-5.13-9.19-4.47-.8.35-1.18,2.29.13,8.55-1.13-1.21-2.93-2.73-5.11-2.68-2.54.06-3.34,2.22-6.77,4.34-3.69,2.29-9.45,3.93-12.04,1.74-1.69-1.42-.6-3.25-2.04-4.94-2.21-2.58-7.22-1.18-16.77.85-15.38,3.28-19.51,3.31-23.32,1.36-3.05-1.55-3.01-2.9-5.45-4.6-8.15-5.68-19,2.18-38.98,7.83-10.79,3.05-24.31,6.73-40.17,4-11.63-2-9.65-4.88-19.4-6.38-25.73-3.96-41.82,15.73-56.68,7.15-3.38-1.95-5.3-4.56-10.21-5.36-7.76-1.26-10.29,4.06-17.36,3.32-9.06-.95-10.7-10.3-17.87-9.7-5.54.46-6.08,6.18-12.77,8.68-7.64,2.86-14.27-1.87-21.45-4.09-15.57-4.8-28.38,3.89-42.13,8.43-13.96,4.61-35.45,7.09-67.4-3.83-33.75,2.06-59.69-2.76-77.36-7.66-48.7-13.52-80.92-40.6-118.47-27.57-6.18,2.14-10.89,4.82-13.79,6.64-4.19.57-10.14.69-16.17-2.04-3.16-1.43-4.16-2.66-7.32-4.09-5.82-2.62-9.45-1.63-17.02-2.04-9.18-.5-19.99-1.08-27.15-7.91-3.24-3.10-3.25-5.1-6.89-7.15-5.09-2.86-10.61-2.06-15.06-1.28-23.6,4.16-25.95,9.52-33.79,7.32-8.91-2.5-9.01-10.3-18.72-12.6-7.28-1.72-14.17,1.02-18.72,3.49-.04-1.2-.29-2.95-1.53-4.09-4.06-3.7-15.15,2.42-17.87,3.83-23.37,12.11-72.55,10.45-90.38,8.43-22.47-2.55-18.66-8.32-64.85-25.28-30.25-11.1-63.25-22.65-104.17-23.49-16.8-.34-41.6,1-71.49,9.7Z"
@@ -644,7 +684,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
             {/* Stones/Rocks */}
             {/* Stones - Fade out */}
             <g id="stones" style={{
-              opacity: getStonesExitOpacity(),
+              opacity: scrollValues.stonesExitOpacity,
             }}>
             <g>
                 <path
@@ -662,7 +702,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
               </g>
             {/* Store - fades out */}
             <g style={{
-              opacity: getStoreExitOpacity(),
+              opacity: scrollValues.storeExitOpacity,
             }}>
               <path
                 className="cls-35"
@@ -701,7 +741,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
             <g id="tents-campfire">
               {/* Tent 1 - slides DOWN and fades out */}
               <g id="tents-campfire-tent-1" style={{
-                opacity: getTent1ExitOpacity(),
+                opacity: scrollValues.tent1ExitOpacity,
               }}>
                 <g>
                   <path
@@ -868,7 +908,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
               </g>
               {/* Campfire - fades out */}
               <g id="tents-campfire-campfire" ref={campfireRef} style={{
-                opacity: getCampfireExitOpacity(),
+                opacity: scrollValues.campfireExitOpacity,
               }}>
                 <g>
                   <ellipse

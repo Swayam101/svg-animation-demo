@@ -1,34 +1,39 @@
 import * as React from "react";
+import { SLIDE2 } from "../constants/timeline";
+import { easeOut } from "../utils/easing";
 
 interface Slide2Props extends React.SVGProps<SVGSVGElement> {
   scrollProgress?: number;
 }
 
-const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props }) => {
-  // Entry animations for Slide2 elements (fade in and slide in from different directions)
-  
-  // Phase 2 curtain fully covers at 0.70 — snap all Slide2 elements at curtain rise
-  const SLIDE2_EXIT = 0.65;
+const EXIT_TRANSLATE_Y = 400;
 
-  // Quick fade-in helper — all elements fade in together 0.42→0.47 (under curtain),
-  // then snap out when curtain rises for Slide2→3 transition
-  const slide2Fade = (entryStart = 0.42, entryEnd = 0.47) => {
+const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props }) => {
+  const { EXIT, EXIT_START, EXIT_END, FADE_ENTRY_START, FADE_ENTRY_END } = SLIDE2;
+
+  const slide2Fade = (entryStart = FADE_ENTRY_START, entryEnd = FADE_ENTRY_END) => {
     if (scrollProgress < entryStart) return 0;
-    if (scrollProgress < entryEnd) return (scrollProgress - entryStart) / (entryEnd - entryStart);
-    return scrollProgress < SLIDE2_EXIT ? 1 : 0;
+    if (scrollProgress < entryEnd) return easeOut((scrollProgress - entryStart) / (entryEnd - entryStart));
+    if (scrollProgress < EXIT_START) return 1;
+    if (scrollProgress < EXIT_END) return 1 - easeOut((scrollProgress - EXIT_START) / (EXIT_END - EXIT_START));
+    return 0;
   };
 
-  const getGroundEntryOpacity     = () => slide2Fade(0.42, 0.47);
-  const getLanternEntryOpacity    = () => slide2Fade(0.42, 0.47);
-  const getGroundShovelledOpacity = () => slide2Fade(0.42, 0.47);
+  const getGroundEntryOpacity     = () => slide2Fade();
+  const getLanternEntryOpacity    = () => slide2Fade();
+  const getGroundShovelledOpacity = () => slide2Fade();
 
-  // Lantern - scale up on entry, hold at full scale, snap away
+  const getExitTranslateY = () => {
+    if (scrollProgress < EXIT_START) return 0;
+    if (scrollProgress >= EXIT_END) return EXIT_TRANSLATE_Y;
+    return EXIT_TRANSLATE_Y * easeOut((scrollProgress - EXIT_START) / (EXIT_END - EXIT_START));
+  };
+
   const getLanternEntryScale = () => {
-    const entryStart = 0.42; const entryEnd = 0.47;
     const minScale = 0.5;
-    if (scrollProgress < entryStart) return minScale;
-    if (scrollProgress <= entryEnd) return minScale + (1 - minScale) * ((scrollProgress - entryStart) / (entryEnd - entryStart));
-    if (scrollProgress < SLIDE2_EXIT) return 1;
+    if (scrollProgress < FADE_ENTRY_START) return minScale;
+    if (scrollProgress <= FADE_ENTRY_END) return minScale + (1 - minScale) * easeOut((scrollProgress - FADE_ENTRY_START) / (FADE_ENTRY_END - FADE_ENTRY_START));
+    if (scrollProgress < EXIT) return 1;
     return minScale;
   };
 
@@ -41,7 +46,7 @@ const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props
     <defs>
       <style>
         {
-          "\n      .s2-cls-1 {\n        fill: #f4a038;\n      }\n\n      .s2-cls-2 {\n        fill: #37325b;\n      }\n\n      .s2-cls-3 {\n        fill: none;\n        stroke: #06102b;\n        stroke-linecap: round;\n        stroke-width: 2px;\n      }\n\n      .s2-cls-3, .s2-cls-4 {\n        stroke-miterlimit: 10;\n      }\n\n      .s2-cls-5 {\n        fill: #8d513f;\n      }\n\n      .s2-cls-6 {\n        fill: #081639;\n      }\n\n      .s2-cls-7 {\n        fill: #68423e;\n      }\n\n      .s2-cls-8 {\n        fill: url(#s2-linear-gradient-2);\n      }\n\n      .s2-cls-9 {\n        fill: #0e1834;\n      }\n\n      .s2-cls-10 {\n        fill: url(#s2-linear-gradient-10);\n      }\n\n      .s2-cls-11 {\n        fill: url(#s2-linear-gradient-12);\n      }\n\n      .s2-cls-12 {\n        opacity: .84;\n      }\n\n      .s2-cls-12, .s2-cls-13 {\n        mix-blend-mode: screen;\n      }\n\n      .s2-cls-4 {\n        fill: #844c38;\n        stroke: #734a44;\n      }\n\n      .s2-cls-14 {\n        fill: #081537;\n      }\n\n      .s2-cls-15 {\n        fill: url(#s2-linear-gradient-4);\n      }\n\n      .s2-cls-16 {\n        fill: url(#s2-radial-gradient);\n      }\n\n      .s2-cls-17 {\n        fill: url(#s2-linear-gradient-3);\n      }\n\n      .s2-cls-18 {\n        fill: #fbc251;\n      }\n\n      .s2-cls-19 {\n        fill: url(#s2-linear-gradient-5);\n      }\n\n      .s2-cls-20 {\n        fill: #663c32;\n      }\n\n      .s2-cls-21 {\n        isolation: isolate;\n      }\n\n      .s2-cls-22 {\n        fill: #ed9730;\n      }\n\n      .s2-cls-23 {\n        fill: url(#s2-linear-gradient-8);\n      }\n\n      .s2-cls-24 {\n        fill: #0d1c47;\n      }\n\n      .s2-cls-25 {\n        fill: url(#s2-radial-gradient-2);\n      }\n\n      .s2-cls-26 {\n        fill: #f19c34;\n      }\n\n      .s2-cls-27 {\n        fill: #412c3b;\n      }\n\n      .s2-cls-28 {\n        fill: #07153a;\n      }\n\n      .s2-cls-29 {\n        fill: #162d57;\n      }\n\n      .s2-cls-30 {\n        fill: url(#s2-linear-gradient-7);\n      }\n\n      .s2-cls-31 {\n        fill: url(#s2-linear-gradient-9);\n      }\n\n      .s2-cls-32 {\n        fill: url(#s2-linear-gradient-11);\n      }\n\n      .s2-cls-33 {\n        fill: #f8be4b;\n      }\n\n      .s2-cls-34 {\n        fill: url(#s2-linear-gradient-6);\n      }\n\n      .s2-cls-35 {\n        fill: #091337;\n      }\n\n      .s2-cls-36 {\n        fill: #faf3c9;\n      }\n\n      .s2-cls-13 {\n        opacity: .65;\n      }\n\n      .s2-cls-37 {\n        fill: #eaa552;\n      }\n\n      .s2-cls-38 {\n        fill: #3f2d39;\n      }\n\n      .s2-cls-39 {\n        fill: #85513f;\n      }\n\n      .s2-cls-40 {\n        fill: #2c4a80;\n      }\n\n      .s2-cls-41 {\n        fill: url(#s2-linear-gradient);\n      }\n\n      .s2-cls-42 {\n        fill: #4f2f34;\n      }\n\n      .s2-cls-43 {\n        fill: #784a3a;\n      }\n\n      .s2-cls-44 {\n        fill: #6d4038;\n      }\n\n      .s2-cls-45 {\n        fill: #674f4b;\n      }\n    "
+          "\n      .s2-cls-1 {\n        fill: #f4a038;\n      }\n\n      .s2-cls-2 {\n        fill: #37325b;\n      }\n\n      .s2-cls-3 {\n        fill: none;\n        stroke: #06102b;\n        stroke-linecap: round;\n        stroke-width: 2px;\n      }\n\n      .s2-cls-3, .s2-cls-4 {\n        stroke-miterlimit: 10;\n      }\n\n      .s2-cls-5 {\n        fill: #8d513f;\n      }\n\n      .s2-cls-6 {\n        fill: #081639;\n      }\n\n      .s2-cls-7 {\n        fill: #68423e;\n      }\n\n      .s2-cls-8 {\n        fill: url(#s2-linear-gradient-2);\n      }\n\n      .s2-cls-9 {\n        fill: #0e1834;\n      }\n\n      .s2-cls-10 {\n        fill: url(#s2-linear-gradient-10);\n      }\n\n      .s2-cls-11 {\n        fill: url(#s2-linear-gradient-12);\n      }\n\n      .s2-cls-12 {\n        opacity: .84;\n      }\n\n      .s2-cls-12, .s2-cls-13 {\n        mix-blend-mode: screen;\n      }\n\n      .s2-cls-4 {\n        fill: #844c38;\n        stroke: #734a44;\n      }\n\n      .s2-cls-14 {\n        fill: #081537;\n      }\n\n      .s2-cls-15 {\n        fill: url(#s2-linear-gradient-4);\n      }\n\n      .s2-cls-16 {\n        fill: url(#s2-radial-gradient);\n      }\n\n      .s2-cls-17 {\n        fill: url(#s2-linear-gradient-3);\n      }\n\n      .s2-cls-18 {\n        fill: #fbc251;\n      }\n\n      .s2-cls-19 {\n        fill: url(#s2-linear-gradient-5);\n      }\n\n      .s2-cls-20 {\n        fill: #663c32;\n      }\n\n      .s2-cls-21 {\n        isolation: isolate;\n      }\n\n      .s2-cls-22 {\n        fill: #ed9730;\n      }\n\n      .s2-cls-23 {\n        fill: url(#s2-linear-gradient-8);\n      }\n\n      .s2-cls-24 {\n        fill: #0d1c47;\n      }\n\n      .s2-cls-25 {\n        fill: url(#s2-radial-gradient-2);\n      }\n\n      .s2-cls-26 {\n        fill: #f19c34;\n      }\n\n      .s2-cls-27 {\n        fill: #412c3b;\n      }\n\n      .s2-cls-28 {\n        fill: #07153a;\n      }\n\n      .s2-cls-29 {\n        fill: #162d57;\n      }\n\n      .s2-cls-30 {\n        fill: url(#s2-linear-gradient-7);\n      }\n\n      .s2-cls-31 {\n        fill: url(#s2-linear-gradient-9);\n      }\n\n      .s2-cls-32 {\n        fill: url(#s2-linear-gradient-11);\n      }\n\n      .s2-cls-33 {\n        fill: #f8be4b;\n      }\n\n      .s2-cls-34 {\n        fill: url(#s2-linear-gradient-6);\n      }\n\n      .s2-cls-35 {\n        fill: #091337;\n      }\n\n      .s2-cls-36 {\n        fill: #faf3c9;\n      }\n\n      .s2-cls-13 {\n        opacity: .65;\n      }\n\n      .s2-cls-37 {\n        fill: #eaa552;\n      }\n\n      .s2-cls-38 {\n        fill: #3f2d39;\n      }\n\n      .s2-cls-39 {\n        fill: #85513f;\n      }\n\n      .s2-cls-40 {\n        fill: #2c4a80;\n      }\n\n      .s2-cls-41 {\n        fill: url(#s2-linear-gradient);\n      }\n\n      .s2-cls-42 {\n        fill: #4f2f34;\n      }\n\n      .s2-cls-43 {\n        fill: #784a3a;\n      }\n\n      .s2-cls-44 {\n        fill: #6d4038;\n      }\n\n      .s2-cls-45 {\n        fill: #674f4b;\n      }\n\n      @keyframes s2-digging {\n        0%, 100% { transform: translate(-445px, -654px) rotate(-6deg); }\n        50% { transform: translate(-445px, -654px) rotate(6deg); }\n      }\n      @keyframes s2-digging-inv {\n        0%, 100% { transform: translate(-912px, -650px) rotate(6deg); }\n        50% { transform: translate(-912px, -650px) rotate(-6deg); }\n      }\n      .s2-shovel-group,\n      .s2-shovel-group-inv {\n        transform-box: fill-box;\n      }\n      .s2-shovel-group {\n        animation: s2-digging 1.5s ease-in-out infinite alternate;\n      }\n      .s2-shovel-group-inv {\n        animation: s2-digging-inv 1.5s ease-in-out infinite alternate;\n      }\n    "
         }
       </style>
       <radialGradient
@@ -103,6 +108,7 @@ const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props
       style={{}}
       transform="matrix(0.9, 0, 0, 0.9, 20, 180)"
     >
+      <g style={{ transform: `translateY(${getExitTranslateY()}px)` }}>
       <g id="Layer_2" data-name="Layer 2">
         <g id="Layer_1-2" data-name="Layer 1">
           <g>
@@ -416,15 +422,18 @@ const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props
                 className="s2-cls-35"
                 d="M405.8,619.78c.56-5.38,7.13-10.04,20.26-19.15,3.68-2.55,6.99-4.71,9.73-6.43,2.18-1.37,4.68-2.13,7.26-2.21l14.64-.46c1.84-.06,3.53-1.01,4.54-2.55,1.07-.93,2.21-2.06,3.33-3.41,2.92-3.54,4.45-7.16,5.28-9.79.4-.81,3.94-7.69,11.23-8.85,8.05-1.28,16.33,5.1,17.36,12.94.79,5.96-2.91,10.58-3.74,11.57l-6.13,3.74c-2.26-.12-3.3.49-3.83,1.11-1.2,1.39-.16,3.2-1.45,4.34-1.16,1.03-2.79.23-3.49,1.36-.48.79-.04,1.71-.6,2.04-.44.26-.89-.22-1.53-.09-.48.1-1.06.55-1.55,2.02-.57.56-1.32,1.47-1.53,2.72-.18,1.03,0,2.11.54,3.07,1.43,2.51,2.1,5.38,1.92,8.27-1.93,4.73-4.22,11.93-4.83,20.94-.62,9.24.79,16.84,2.11,21.84-.02.3-.02.68.05,1.12.06.37.16.73.29,1.08l4.69,11.87c-1.45,4.23-5.1,6.94-8.43,6.72-4.41-.29-8.74-5.73-7.23-12.17-2.04-6.13-4.09-12.26-6.13-18.38l-3.4,5.45,15.39,46.5c.4,1.22.63,2.49.67,3.78,1.89,10.91,3.12,23.67,2.66,37.89-.16,5.01-.52,9.78-1.02,14.3,1.85,1.04,4.13,2.13,6.81,3.06,3.35,1.16,6.39,1.75,8.85,2.04.42.99.45,1.77.34,2.38-.59,3.31-6.06,5.8-13.62,6.13-4.12-.39-8.24-.78-12.36-1.17-3.38-.32-6.15-2.81-6.82-6.13-1.97-10.87-2.85-19.82-3.29-26.06-.82-11.7-.37-17.87-3.06-26.89-2.21-7.41-5.43-13.05-7.83-16.68-2.38,21.33-4.77,42.67-7.15,64,1.73,3.06,4.12,5.79,7.49,7.15,2.76,1.11,5.19.91,5.45,2.04.31,1.36-2.8,3.25-4.77,4.09-2.73,1.16-5.27,1.16-6.81,1.02-4.92-.33-9.85-.66-14.77-.98-3.17-.21-5.63-2.86-5.6-6.04l.95-104c.01-1.25-.59-2.43-1.61-3.16-1.89-1.35-2.76-3.73-2.18-5.98l4.82-18.73c-4.04-2.81-12.71-9.65-11.92-17.28Z"
               />
-              <g>
-                <polygon
-                  className="s2-cls-2"
-                  points="551.5 750.76 444.61 655.1 445.29 652.38 557.29 745.66 551.5 750.76"
-                />
-                <path
-                  className="s2-cls-28"
-                  d="M570.39,764.04l-26.89-1.87c-2.34-12.87,1.42-24.65,10.94-27.79.31-.1.62-.19.92-.28,8.67-2.32,16.96,4.95,16.27,13.9l-1.23,16.03Z"
-                />
+              {/* Shovel: translate(pivot) → rotate → translate(-pivot) so rotation is around hand grip (445,654) like GSAP svgOrigin */}
+              <g transform="translate(445, 654)">
+                <g className="s2-shovel-group" transform="translate(-445, -654)">
+                  <polygon
+                    className="s2-cls-2"
+                    points="551.5 750.76 444.61 655.1 445.29 652.38 557.29 745.66 551.5 750.76"
+                  />
+                  <path
+                    className="s2-cls-28"
+                    d="M570.39,764.04l-26.89-1.87c-2.34-12.87,1.42-24.65,10.94-27.79.31-.1.62-.19.92-.28,8.67-2.32,16.96,4.95,16.27,13.9l-1.23,16.03Z"
+                  />
+                </g>
               </g>
               <path
                 className="s2-cls-45"
@@ -508,15 +517,18 @@ const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props
                 className="s2-cls-35"
                 d="M936.27,629.52c-.38-3.65-4.85-6.82-13.77-13.02-2.5-1.74-4.75-3.2-6.61-4.37-1.48-.93-3.18-1.45-4.93-1.5l-9.95-.32c-1.25-.04-2.4-.69-3.09-1.74-.73-.63-1.51-1.4-2.27-2.32-1.99-2.41-3.02-4.86-3.59-6.65-.27-.55-2.68-5.23-7.64-6.02-5.47-.87-11.1,3.47-11.8,8.79-.53,4.05,1.98,7.19,2.55,7.87l4.17,2.55c1.54-.08,2.24.33,2.6.75.81.94.11,2.18.98,2.95.79.7,1.9.15,2.37.93.33.53.02,1.16.4,1.39.3.18.6-.15,1.04-.06.32.07.72.37,1.05,1.37.39.38.9,1,1.04,1.85.12.7,0,1.44-.37,2.09-.97,1.71-1.43,3.66-1.3,5.62,1.31,3.22,2.87,8.11,3.28,14.23.42,6.28-.53,11.45-1.44,14.85.01.2.01.46-.04.76-.04.25-.11.5-.2.73l-3.19,8.07c.98,2.88,3.47,4.72,5.73,4.57,3-.19,5.94-3.9,4.92-8.27,1.39-4.17,2.78-8.33,4.17-12.5l2.31,3.7-10.46,31.61c-.27.83-.43,1.7-.46,2.57-1.29,7.41-2.12,16.09-1.81,25.76.11,3.4.35,6.65.69,9.72-1.26.71-2.8,1.45-4.63,2.08-2.28.79-4.34,1.19-6.02,1.39-.29.67-.31,1.21-.23,1.62.4,2.25,4.12,3.94,9.26,4.17,2.8-.26,5.6-.53,8.4-.79,2.3-.22,4.18-1.91,4.64-4.17,1.34-7.39,1.94-13.48,2.23-17.72.56-7.95.25-12.15,2.08-18.28,1.5-5.04,3.69-8.87,5.32-11.34,1.62,14.5,3.24,29,4.86,43.5-1.17,2.08-2.8,3.93-5.09,4.86-1.88.76-3.53.62-3.7,1.39-.21.92,1.9,2.21,3.24,2.78,1.85.79,3.58.79,4.63.69,3.35-.22,6.69-.45,10.04-.67,2.16-.14,3.83-1.95,3.81-4.11l-.65-70.69c0-.85.4-1.65,1.09-2.15,1.29-.92,1.87-2.53,1.48-4.06l-3.28-12.73c2.74-1.91,8.64-6.56,8.1-11.74Z"
               />
-              <g>
-                <polygon
-                  className="s2-cls-2"
-                  points="837.23 718.55 909.89 653.53 909.43 651.68 833.3 715.08 837.23 718.55"
-                />
-                <path
-                  className="s2-cls-28"
-                  d="M824.39,727.58l18.28-1.27c1.59-8.75-.97-16.75-7.43-18.89-.21-.07-.42-.13-.63-.19-5.89-1.58-11.53,3.37-11.06,9.45l.84,10.9Z"
-                />
+              {/* Shovel: translate(pivot) → rotate → translate(-pivot) so rotation is around hand grip (912,650) like GSAP svgOrigin */}
+              <g transform="translate(912, 650)">
+                <g className="s2-shovel-group-inv" transform="translate(-912, -650)">
+                  <polygon
+                    className="s2-cls-2"
+                    points="837.23 718.55 909.89 653.53 909.43 651.68 833.3 715.08 837.23 718.55"
+                  />
+                  <path
+                    className="s2-cls-28"
+                    d="M824.39,727.58l18.28-1.27c1.59-8.75-.97-16.75-7.43-18.89-.21-.07-.42-.13-.63-.19-5.89-1.58-11.53,3.37-11.06,9.45l.84,10.9Z"
+                  />
+                </g>
               </g>
               <path
                 className="s2-cls-45"
@@ -579,6 +591,7 @@ const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props
         
           </g>
         </g>
+      </g>
       </g>
     </g>
   </svg>

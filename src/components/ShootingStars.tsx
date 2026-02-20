@@ -1,55 +1,79 @@
 import * as React from "react";
+import { scopeCss } from "../utils/scopedCss";
+import { SHOOTING_STARS } from "../constants/timeline";
+import { easeOut } from "../utils/easing";
 
 interface ShootingStarsProps extends React.SVGProps<SVGSVGElement> {
   scrollProgress?: number;
 }
 
-// Scoped at module load — only the two classes used by shooting stars
-const SHOOTING_STARS_CSS = (
-  "\n      .cls-29 { fill: url(#ss-linear-gradient-13); }\n      .cls-30 { fill: url(#ss-linear-gradient-12); }\n      .cls-29, .cls-30 { opacity: .73; }\n    "
-).replace(/\.cls-/g, '#shooting-stars-svg .cls-');
+const SCOPE_ID = "shooting-stars-svg";
+const SHOOTING_STARS_CSS = scopeCss(
+  "\n      .cls-29 { fill: url(#ss-linear-gradient-13); }\n      .cls-30 { fill: url(#ss-linear-gradient-12); }\n      .cls-29, .cls-30 { opacity: .73; }\n    ",
+  SCOPE_ID
+);
 
-// 7 varied paths: star flies from upper-right (sx,sy) → lower-left (ex,ey)
+// Centered, high in sky: avoid right palm tree (x < 1100). Moon x~800. Stay high (y 80–260).
 const STAR_PATHS = [
-  { sx: 1600, sy: -300, ex: -600, ey:  700 },
-  { sx: 1900, sy: -150, ex: -400, ey:  450 },
-  { sx: 1500, sy: -500, ex: -300, ey:  600 },
-  { sx: 2100, sy: -250, ex: -700, ey:  550 },
-  { sx: 1700, sy: -100, ex: -500, ey:  380 },
-  { sx: 1800, sy: -600, ex: -200, ey:  750 },
-  { sx: 2000, sy: -380, ex: -450, ey:  500 },
+  { sx: 1000, sy: 90, ex: 420, ey: 240 },
+  { sx: 950, sy: 80, ex: 400, ey: 220 },
+  { sx: 1050, sy: 95, ex: 450, ey: 250 },
+  { sx: 980, sy: 85, ex: 430, ey: 230 },
+  { sx: 1020, sy: 92, ex: 410, ey: 245 },
+  { sx: 960, sy: 88, ex: 440, ey: 235 },
+  { sx: 990, sy: 86, ex: 425, ey: 238 },
 ] as const;
 
-// 3 scroll events — 1 per scene, wider ranges = slower travel
-// scene 1: 0.00–0.27  scene 2: 0.27–0.65  scene 3: 0.65–1.00
-const EVENTS = [
-  { s: 0.04, e: 0.22, p: 3 }, // scene 1 — one star
-  { s: 0.32, e: 0.55, p: 5 }, // scene 2 — one star
-  { s: 0.70, e: 0.92, p: 1 }, // scene 3 — one star
+const BASE_EVENTS = [
+  { s: SHOOTING_STARS.SCENE1_START, e: SHOOTING_STARS.SCENE1_END },
+  { s: SHOOTING_STARS.SCENE2_START, e: SHOOTING_STARS.SCENE2_END },
+  { s: SHOOTING_STARS.SCENE3_START, e: SHOOTING_STARS.SCENE3_END },
 ] as const;
 
-// Compute the animated state for a star given the events it participates in
-const evalStar = (scrollProgress: number, eventIndices: readonly number[]) => {
-  for (const idx of eventIndices) {
-    const ev = EVENTS[idx];
-    if (scrollProgress >= ev.s && scrollProgress <= ev.e) {
-      const t    = (scrollProgress - ev.s) / (ev.e - ev.s);
-      const path = STAR_PATHS[ev.p];
-      const x    = path.sx + (path.ex - path.sx) * t;
-      const y    = path.sy + (path.ey - path.sy) * t;
-      // fade in first 15%, hold, fade out last 15%
-      let o = 1;
-      if (t < 0.15)      o = t / 0.15;
-      else if (t > 0.85) o = (1 - t) / 0.15;
-      return { x, y, o };
-    }
+type EventConfig = { s: number; e: number; p: number; pathEndT: number; fadeInEnd: number };
+
+// Randomize events once on mount — different path, timing, speed per star
+const useRandomizedEvents = (): EventConfig[] =>
+  React.useMemo(() => {
+    const rand = (min: number, max: number) => min + Math.random() * (max - min);
+    const randInt = (min: number, max: number) => Math.floor(rand(min, max + 1));
+    return BASE_EVENTS.map((base) => ({
+      s: base.s + rand(-0.02, 0.02),
+      e: base.e + rand(-0.02, 0.02),
+      p: randInt(0, STAR_PATHS.length - 1),
+      pathEndT: rand(0.38, 0.58),
+      fadeInEnd: rand(0.08, 0.16),
+    }));
+  }, []);
+
+const evalStarForEvent = (
+  scrollProgress: number,
+  ev: EventConfig
+): { x: number; y: number; o: number } => {
+  if (scrollProgress < ev.s || scrollProgress > ev.e) {
+    return { x: 0, y: 0, o: 0 };
   }
-  return { x: 0, y: 0, o: 0 };
+  const t = (scrollProgress - ev.s) / (ev.e - ev.s);
+  const path = STAR_PATHS[ev.p];
+  const rawPathT = Math.min(1, t / ev.pathEndT);
+  const pathT = easeOut(rawPathT);
+  const x = path.sx + (path.ex - path.sx) * pathT;
+  const y = path.sy + (path.ey - path.sy) * pathT;
+  let o = 1;
+  if (t < ev.fadeInEnd) o = t / ev.fadeInEnd;
+  else if (t > 0.65) o = (1 - t) / 0.35;
+  return { x, y, o };
 };
 
+const STAR_PATH_D =
+  "M504,167.58L829.46,19.18l-316.9,168.13c-4.76,2.52-10.73,1.11-13.69-3.38-.25-.37-.47-.77-.67-1.17-1.08-2.22-1.32-4.73-.79-7.12.78-3.57,3.27-6.54,6.6-8.06Z";
+
 const ShootingStars: React.FC<ShootingStarsProps> = React.memo(({ scrollProgress = 0, ...props }) => {
-  // Single star — one event per scene (indices 0, 1, 2)
-  const star = evalStar(scrollProgress, [0, 1, 2]);
+  const events = useRandomizedEvents();
+  const stars = React.useMemo(
+    () => [0, 1, 2].map((idx) => evalStarForEvent(scrollProgress, events[idx])),
+    [scrollProgress, events]
+  );
 
   return (
     <svg
@@ -96,15 +120,18 @@ const ShootingStars: React.FC<ShootingStarsProps> = React.memo(({ scrollProgress
           href="#ss-linear-gradient-12"
         />
       </defs>
-      <path
-        id="shooting-star"
-        style={{
-          opacity: star.o,
-          transform: `translate(${star.x}px, ${star.y}px)`,
-        }}
-        className="cls-30"
-        d="M504,167.58L829.46,19.18l-316.9,168.13c-4.76,2.52-10.73,1.11-13.69-3.38-.25-.37-.47-.77-.67-1.17-1.08-2.22-1.32-4.73-.79-7.12.78-3.57,3.27-6.54,6.6-8.06Z"
-      />
+      {stars.map((star, i) => (
+        <path
+          key={i}
+          id={`shooting-star-${i}`}
+          style={{
+            opacity: star.o,
+            transform: `translate(${star.x}px, ${star.y}px)`,
+          }}
+          className="cls-30"
+          d={STAR_PATH_D}
+        />
+      ))}
     </svg>
   );
 });

@@ -1,17 +1,14 @@
 import * as React from "react";
+import { easeOut } from "../utils/easing";
+import { SLIDE4, progressInRange } from "../constants/timeline";
 
 interface Slide4Props extends React.HTMLAttributes<HTMLDivElement> {
   scrollProgress?: number;
 }
 
-// Synced with metro: both 0.94→0.96. WINDOW = 1/39 so last building completes exactly at cityProgress=1.
 const TOTAL_ELEMENTS = 39;
-const WINDOW = 1 / TOTAL_ELEMENTS; // ~0.0256; all 39 elements fit in 0–1, last completes at 0.96
-const SLIDE_DIST = 400; // SVG units to slide up from
-
-function easeOut(t: number): number {
-  return 1 - Math.pow(1 - t, 3);
-}
+const WINDOW = 1 / TOTAL_ELEMENTS;
+const SLIDE_DIST = 400;
 
 // id -> data-anim number (from city-scroll.html)
 const ID_TO_ANIM: Record<string, number> = {
@@ -56,34 +53,42 @@ const ID_TO_ANIM: Record<string, number> = {
   "lamp-post-12": 39,
 };
 
-// Synced with metro: both 0.94→0.96. Train and last building finish together.
-const CITY_START = 0.94;
-const CITY_END = 0.96;
-
 const Slide4: React.FC<Slide4Props> = React.memo(({ scrollProgress = 0, ...props }) => {
+  const { CITY_START, CITY_END } = SLIDE4;
   const objectRef = React.useRef<HTMLObjectElement>(null);
   const [svgReady, setSvgReady] = React.useState(false);
 
   // City progress 0–1 over the metro section scroll range
-  const cityProgress =
-    scrollProgress < CITY_START ? 0 : Math.min(1, (scrollProgress - CITY_START) / (CITY_END - CITY_START));
+  const cityProgress = progressInRange(scrollProgress, CITY_START, CITY_END);
 
-  // Apply animations to SVG elements when document is ready and scroll changes
+  // Apply animations to SVG elements when document is ready and scroll changes.
+  // Batch DOM updates in requestAnimationFrame to avoid layout thrashing.
   React.useEffect(() => {
     const doc = objectRef.current?.contentDocument;
     if (!doc) return;
 
-    Object.entries(ID_TO_ANIM).forEach(([id, n]) => {
-      const el = doc.getElementById(id) as SVGGElement | null;
-      if (!el) return;
+    const rafId = requestAnimationFrame(() => {
+      const updates: Array<{ el: SVGGElement; transform: string; opacity: string }> = [];
+      Object.entries(ID_TO_ANIM).forEach(([id, n]) => {
+        const el = doc.getElementById(id) as SVGGElement | null;
+        if (!el) return;
 
-      const triggerAt = (n - 1) / TOTAL_ELEMENTS;
-      const raw = (cityProgress - triggerAt) / WINDOW;
-      const t = easeOut(Math.max(0, Math.min(1, raw)));
+        const triggerAt = (n - 1) / TOTAL_ELEMENTS;
+        const raw = (cityProgress - triggerAt) / WINDOW;
+        const t = easeOut(Math.max(0, Math.min(1, raw)));
 
-      el.style.transform = `translateY(${SLIDE_DIST * (1 - t)}px)`;
-      el.style.opacity = t > 0.01 ? "1" : "0";
+        updates.push({
+          el,
+          transform: `translateY(${SLIDE_DIST * (1 - t)}px)`,
+          opacity: t > 0.01 ? "1" : "0",
+        });
+      });
+      updates.forEach(({ el, transform, opacity }) => {
+        el.style.transform = transform;
+        el.style.opacity = opacity;
+      });
     });
+    return () => cancelAnimationFrame(rafId);
   }, [cityProgress, svgReady]);
 
   const handleLoad = React.useCallback(() => {
