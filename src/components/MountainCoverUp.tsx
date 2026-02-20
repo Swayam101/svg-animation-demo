@@ -30,6 +30,9 @@ const LAYERS = [
 
 const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
   ({ scrollProgress = 0, ...props }) => {
+    // Don't render until needed — avoids mount flicker when entering
+    if (scrollProgress < ENTRANCE_START - 0.02) return null;
+
     const getCurtainY = (): string => {
       if (scrollProgress < ENTRANCE_START) return `${REST_Y}%`;
       if (scrollProgress < EXIT_START) {
@@ -66,10 +69,11 @@ const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
           width: "100%",
           height: "100%",
           opacity: getContainerOpacity(),
-          willChange: "transform",
           pointerEvents: "none",
+          isolation: "isolate",
           contain: "paint",
           transform: "translateZ(0)",
+          backfaceVisibility: "hidden",
         }}
         {...props}
       >
@@ -86,7 +90,6 @@ const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
                     style={{
                       transform: `translate3d(${layer.xTranslate}, ${curtainY}, 0) scale(${layer.scale})`,
                       transformOrigin: "center bottom",
-                      willChange: "transform",
                     }}
                   >
                     <g
