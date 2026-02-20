@@ -41,7 +41,7 @@ export const TIMELINE_EVENTS = [
   { t: 0.55, label: "Mountain curtain entrance (before Slide3 exit)" },
   { t: 0.62, label: "Shooting star 3 end" },
   { t: 0.65, label: "Section 4: Metro + city start" },
-  { t: 0.8, label: "Plane overlay start" },
+  { t: 0.85, label: "Plane overlay start" },
   { t: 0.98, label: "Metro travel end, city build complete" },
   { t: 1.0, label: "Plane overlay end" },
 ] as const;
@@ -150,7 +150,7 @@ export const SLIDE4 = {
 // PLANE OVERLAY (flies up in slanting path after metro animation ends)
 // ═══════════════════════════════════════════════════════════════════════════════
 export const PLANE = {
-  START: 0.8,
+  START: 0.85,
   END: 1.0,
 } as const;
 

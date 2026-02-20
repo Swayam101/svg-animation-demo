@@ -46,26 +46,36 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
   const getStonesExitOpacity   = () => scrollProgress < 0.15 ? 1 : 0;
   const getStoreExitOpacity    = () => scrollProgress < 0.15 ? 1 : 0;
 
-  // Ground layer exit — during Phase 2 curtain rise (0.38→0.45). No re-entry (sequential timeline).
+  // Ground layer exit during Phase 2 curtain rise (0.38→0.45), re-enter during curtain fall (0.50→0.55).
+  // Exit order: middle first → upper → front last. Re-entry: front first → upper → middle last.
   const getGroundBackMiddleExit = () => {
     const exitS = 0.38; const exitE = 0.42; const dist = 350;
+    const entryS = 0.52; const entryE = 0.55;
     if (scrollProgress < exitS) return 0;
     if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    return dist;
+    if (scrollProgress < entryS) return dist;
+    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
+    return 0;
   };
 
   const getGroundBackUpperExit = () => {
     const exitS = 0.39; const exitE = 0.43; const dist = 400;
+    const entryS = 0.51; const entryE = 0.54;
     if (scrollProgress < exitS) return 0;
     if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    return dist;
+    if (scrollProgress < entryS) return dist;
+    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
+    return 0;
   };
 
   const getGroundBackFrontExit = () => {
     const exitS = 0.40; const exitE = 0.45; const dist = 450;
+    const entryS = 0.50; const entryE = 0.53;
     if (scrollProgress < exitS) return 0;
     if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    return dist;
+    if (scrollProgress < entryS) return dist;
+    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
+    return 0;
   };
 
 

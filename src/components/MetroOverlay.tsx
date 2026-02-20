@@ -12,31 +12,45 @@ const METRO_SCOPED_CSS = (
   "\n      .cls-1 {\n        fill: #111e53;\n      }\n\n      .cls-2 {\n        fill: #68423e;\n      }\n\n      .cls-3, .cls-4, .cls-5 {\n        stroke-miterlimit: 10;\n      }\n\n      .cls-3, .cls-5 {\n        fill: #f7faf1;\n        stroke: #f7ebdb;\n      }\n\n      .cls-6 {\n        fill: #152151;\n      }\n\n      .cls-7 {\n        fill: url(#metro-linear-gradient-2);\n      }\n\n      .cls-8 {\n        filter: url(#metro-outer-glow-4);\n      }\n\n      .cls-8, .cls-9, .cls-10, .cls-11, .cls-12, .cls-13, .cls-14, .cls-15, .cls-16, .cls-17, .cls-18 {\n        fill: #f5d6c4;\n      }\n\n      .cls-19 {\n        fill: #141c4b;\n      }\n\n      .cls-9 {\n        filter: url(#metro-outer-glow-9);\n      }\n\n      .cls-20 {\n        fill: url(#metro-linear-gradient-10);\n      }\n\n      .cls-21 {\n        fill: url(#metro-linear-gradient-12);\n      }\n\n      .cls-22 {\n        opacity: .84;\n      }\n\n      .cls-22, .cls-23 {\n        mix-blend-mode: screen;\n      }\n\n      .cls-10 {\n        filter: url(#metro-outer-glow-1);\n      }\n\n      .cls-11 {\n        filter: url(#metro-outer-glow-3);\n      }\n\n      .cls-24 {\n        mask: url(#metro-mask);\n      }\n\n      .cls-4 {\n        fill: #844c38;\n        stroke: #734a44;\n      }\n\n      .cls-25 {\n        fill: url(#metro-linear-gradient-4);\n      }\n\n      .cls-26 {\n        fill: #111f50;\n      }\n\n      .cls-12 {\n        filter: url(#metro-outer-glow-10);\n      }\n\n      .cls-27 {\n        fill: #161d25;\n      }\n\n      .cls-28 {\n        fill: url(#metro-linear-gradient-3);\n      }\n\n      .cls-13 {\n        filter: url(#metro-outer-glow-6);\n      }\n\n      .cls-5 {\n        filter: url(#metro-outer-glow-11);\n      }\n\n      .cls-29 {\n        fill: url(#metro-linear-gradient-5);\n      }\n\n      .cls-30 {\n        isolation: isolate;\n      }\n\n      .cls-31 {\n        fill: url(#metro-linear-gradient-8);\n      }\n\n      .cls-32 {\n        fill: #0d1c47;\n      }\n\n      .cls-33 {\n        fill: #412c3b;\n      }\n\n      .cls-34 {\n        fill: #162d57;\n      }\n\n      .cls-35 {\n        fill: url(#metro-linear-gradient-7);\n      }\n\n      .cls-36 {\n        fill: url(#metro-linear-gradient-9);\n      }\n\n      .cls-37 {\n        fill: #f3afa6;\n      }\n\n      .cls-38 {\n        fill: url(#metro-linear-gradient-11);\n      }\n\n      .cls-39 {\n        fill: url(#metro-linear-gradient-6);\n      }\n\n      .cls-40 {\n        fill: #faf3c9;\n      }\n\n      .cls-14 {\n        filter: url(#metro-outer-glow-5);\n      }\n\n      .cls-15 {\n        filter: url(#metro-outer-glow-8);\n      }\n\n      .cls-41 {\n        fill: #3f2d39;\n      }\n\n      .cls-17 {\n        filter: url(#metro-outer-glow-7);\n      }\n\n      .cls-42 {\n        fill: #2c4a80;\n      }\n\n      .cls-43 {\n        filter: url(#metro-luminosity-invert);\n      }\n\n      .cls-44 {\n        fill: url(#metro-linear-gradient);\n      }\n\n      .cls-45 {\n        fill: #4f2f34;\n      }\n\n      .cls-46 {\n        fill: #784a3a;\n      }\n\n      .cls-18 {\n        filter: url(#metro-outer-glow-2);\n      }\n\n      .cls-47 {\n        fill: #6d4038;\n      }\n\n      .cls-23 {\n        fill: #fffef8;\n        opacity: .75;\n      }\n\n      @keyframes metro-rotating-spin {\n        0%, 100% { transform: rotate(-4deg); }\n        50% { transform: rotate(4deg); }\n      }\n      #metro-overlay-svg .metro-rotating-part {\n        transform-origin: 895.99px 813.96px;\n        animation: metro-rotating-spin 2s ease-in-out infinite;\n      }\n    "
 ).replace(/\.cls-/g, "#metro-overlay-svg .cls-");
 
-// From animated-metro.svg: train travels translate -500 → 2000 (left to right). We drive this by scroll.
-const METRO_TRAVEL_START = -500;
-const METRO_TRAVEL_END = 2000;
+// Train travels left→right. Start more left (out of screen), reduced total distance to sync with city.
+const METRO_TRAVEL_START = -600;
+const METRO_TRAVEL_END = 1300;
 const METRO_TRAVEL_RANGE = METRO_TRAVEL_END - METRO_TRAVEL_START;
 
-// Metro runs through most of section 4. Mountain (0.91→0.96) overlays during its rise/exit.
-const METRO_SHOW_AT = 0.65;
-const TRAVEL_START = 0.65;
-const TRAVEL_END = 0.98; // train travels 0.65→0.98 (~33% of scroll)
+// Metro in 2 parts: Part 1 (0.70–0.76), pause 0.06, Part 2 (0.82–0.95)
+const METRO_SHOW_AT = 0.70;
+const PART1_END = 0.76;
+const PAUSE_DURATION = 0.06;
+const PART2_START = PART1_END + PAUSE_DURATION; // 0.82
+const TRAVEL_END = 0.95;
 
-const easeOut = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : 1 - (1 - t) * (1 - t));
+const PART1_DISTANCE = METRO_TRAVEL_RANGE * 0.5;
+const PART2_DISTANCE = METRO_TRAVEL_RANGE * 0.5;
+
+const metroEaseOut = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : 1 - Math.pow(1 - t, 4));
 
 const MetroOverlay: React.FC<MetroOverlayProps> = React.memo(({ scrollProgress = 0, ...props }) => {
   let opacity: number;
   if (scrollProgress < METRO_SHOW_AT) opacity = 0;
   else if (scrollProgress < TRAVEL_END) opacity = 1;
   else if (scrollProgress >= 1) opacity = 0;
-  else opacity = 1 - easeOut((scrollProgress - TRAVEL_END) / (1 - TRAVEL_END));
+  else opacity = 1 - metroEaseOut((scrollProgress - TRAVEL_END) / (1 - TRAVEL_END));
 
-  // Train travels left→right only AFTER mountain is gone (0.92→1.0 = 8% scroll)
-  const metroTranslateX =
-    scrollProgress < TRAVEL_START
-      ? METRO_TRAVEL_START
-      : METRO_TRAVEL_START +
-        Math.min(1, (scrollProgress - TRAVEL_START) / (TRAVEL_END - TRAVEL_START)) * METRO_TRAVEL_RANGE;
+  // Two-part travel: Part 1, pause, Part 2
+  let metroTranslateX = METRO_TRAVEL_START;
+  if (scrollProgress >= METRO_SHOW_AT) {
+    if (scrollProgress < PART1_END) {
+      const t = metroEaseOut((scrollProgress - METRO_SHOW_AT) / (PART1_END - METRO_SHOW_AT));
+      metroTranslateX = METRO_TRAVEL_START + t * PART1_DISTANCE;
+    } else if (scrollProgress < PART2_START) {
+      metroTranslateX = METRO_TRAVEL_START + PART1_DISTANCE;
+    } else if (scrollProgress <= TRAVEL_END) {
+      const t = metroEaseOut((scrollProgress - PART2_START) / (TRAVEL_END - PART2_START));
+      metroTranslateX = METRO_TRAVEL_START + PART1_DISTANCE + t * PART2_DISTANCE;
+    } else {
+      metroTranslateX = METRO_TRAVEL_END;
+    }
+  }
 
   return (
   <svg

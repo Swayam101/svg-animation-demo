@@ -11,13 +11,13 @@ const SHOOTING_STARS_CSS = (
 
 // 7 varied paths: star flies from upper-right (sx,sy) → lower-left (ex,ey)
 const STAR_PATHS = [
-  { sx: 1600, sy: -300, ex: -600, ey:  700 },
-  { sx: 1900, sy: -150, ex: -400, ey:  450 },
-  { sx: 1500, sy: -500, ex: -300, ey:  600 },
-  { sx: 2100, sy: -250, ex: -700, ey:  550 },
-  { sx: 1700, sy: -100, ex: -500, ey:  380 },
-  { sx: 1800, sy: -600, ex: -200, ey:  750 },
-  { sx: 2000, sy: -380, ex: -450, ey:  500 },
+  { sx: 1600, sy: -300, ex: -600, ey:  280 },
+  { sx: 1900, sy: -150, ex: -400, ey:  180 },
+  { sx: 1500, sy: -500, ex: -300, ey:  250 },
+  { sx: 2100, sy: -250, ex: -700, ey:  220 },
+  { sx: 1700, sy: -100, ex: -500, ey:  150 },
+  { sx: 1800, sy: -600, ex: -200, ey:  300 },
+  { sx: 2000, sy: -380, ex: -450, ey:  200 },
 ] as const;
 
 // 3 scroll events — 1 per scene, aligned with sequential timeline

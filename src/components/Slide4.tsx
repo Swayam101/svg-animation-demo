@@ -4,13 +4,37 @@ interface Slide4Props extends React.HTMLAttributes<HTMLDivElement> {
   scrollProgress?: number;
 }
 
-// City buildings animate 0.65→0.98 (~33% of scroll). WINDOW = 1/39 so elements stagger in.
-const TOTAL_ELEMENTS = 39;
-const WINDOW = 1 / TOTAL_ELEMENTS;
+// Synced with MetroOverlay: same scroll range (0.70–0.95).
+const CITY_START = 0.70;
 const SLIDE_DIST = 400; // SVG units to slide up from
+
+const PART1_LAST = 15;
+const PART1_GROUP_SIZE = 2;
+const PART2_GROUP_SIZE = 4;
+
+// Scroll distance over which each group animates in (in scroll units, e.g. 0.01 = 1% of page)
+const PART1_WINDOW = 0.01;
+const PART2_WINDOW = 0.02;
+
+// Scroll values (0.70–0.95) when each group appears. Edit these directly.
+const PART1_TRIGGERS: number[] = [
+  0.70, 0.70, 0.70, 0.70, 0.70, 0.70, 0.71, 0.71, // el 1-2, 3-4, 5-6, 7-8, 9-10, 11-12, 13-14, 15
+];
+const PART2_TRIGGERS: number[] = [
+  0.71, 0.71, 0.71, 0.80, 0.80, 0.81, // el 16-19, 20-23, 24-27, 28-31, 32-35, 36-39
+];
 
 function easeOut(t: number): number {
   return 1 - Math.pow(1 - t, 3);
+}
+
+function getGroupTrigger(n: number): { triggerAt: number; windowSize: number } {
+  if (n <= PART1_LAST) {
+    const i = Math.floor((n - 1) / PART1_GROUP_SIZE);
+    return { triggerAt: PART1_TRIGGERS[i] ?? CITY_START, windowSize: PART1_WINDOW };
+  }
+  const i = Math.floor((n - PART1_LAST - 1) / PART2_GROUP_SIZE);
+  return { triggerAt: PART2_TRIGGERS[i] ?? 0.82, windowSize: PART2_WINDOW };
 }
 
 // id -> data-anim number (from city-scroll.html)
@@ -56,19 +80,11 @@ const ID_TO_ANIM: Record<string, number> = {
   "lamp-post-12": 39,
 };
 
-// City visible and animating through metro section
-const CITY_START = 0.65;
-const CITY_END = 0.98;
-
 const Slide4: React.FC<Slide4Props> = React.memo(({ scrollProgress = 0, ...props }) => {
   const objectRef = React.useRef<HTMLObjectElement>(null);
   const [svgReady, setSvgReady] = React.useState(false);
 
-  // City progress 0–1 over the metro section scroll range
-  const cityProgress =
-    scrollProgress < CITY_START ? 0 : Math.min(1, (scrollProgress - CITY_START) / (CITY_END - CITY_START));
-
-  // Apply animations to SVG elements when document is ready and scroll changes
+  // Apply animations: Part 1 groups of 2, Part 2 groups of 4 — items in same group animate together
   React.useEffect(() => {
     const doc = objectRef.current?.contentDocument;
     if (!doc) return;
@@ -77,14 +93,14 @@ const Slide4: React.FC<Slide4Props> = React.memo(({ scrollProgress = 0, ...props
       const el = doc.getElementById(id) as SVGGElement | null;
       if (!el) return;
 
-      const triggerAt = (n - 1) / TOTAL_ELEMENTS;
-      const raw = (cityProgress - triggerAt) / WINDOW;
+      const { triggerAt, windowSize } = getGroupTrigger(n);
+      const raw = (scrollProgress - triggerAt) / windowSize;
       const t = easeOut(Math.max(0, Math.min(1, raw)));
 
       el.style.transform = `translateY(${SLIDE_DIST * (1 - t)}px)`;
       el.style.opacity = t > 0.01 ? "1" : "0";
     });
-  }, [cityProgress, svgReady]);
+  }, [scrollProgress, svgReady]);
 
   const handleLoad = React.useCallback(() => {
     setSvgReady(true);
