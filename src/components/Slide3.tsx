@@ -1,73 +1,65 @@
 import * as React from "react";
+import { useMemo } from "react";
+import { scopeCss } from "../utils/scopedCss";
+import { SLIDE3 } from "../constants/timeline";
+import { easeOut } from "../utils/easing";
+import { SLIDE3_COVERUP_RAW_CSS } from "../styles/slide3-coverup-shared.css";
 
 interface Slide3Props extends React.SVGProps<SVGSVGElement> {
   scrollProgress?: number;
 }
 
-// Computed once at module load — never re-runs on scroll
-const SLIDE3_SCOPED_CSS = (
-  "\n      .cls-1 {\n        fill: #152d69;\n      }\n\n      .cls-2 {\n        fill: #4874cb;\n      }\n\n      .cls-3 {\n        fill: #68423e;\n      }\n\n      .cls-4 {\n        fill: url(#linear-gradient-2);\n      }\n\n      .cls-5 {\n        fill: #8090b3;\n      }\n\n      .cls-6 {\n        fill: #0d1a44;\n      }\n\n      .cls-7 {\n        fill: #00123f;\n      }\n\n      .cls-8 {\n        mask: url(#mask-1);\n      }\n\n      .cls-9 {\n        fill: #183577;\n      }\n\n      .cls-10 {\n        fill: url(#linear-gradient-10);\n      }\n\n      .cls-11 {\n        fill: #6d7fa8;\n      }\n\n      .cls-12 {\n        fill: #304a83;\n      }\n\n      .cls-13 {\n        fill: #143172;\n      }\n\n      .cls-14 {\n        fill: #212f3e;\n      }\n\n      .cls-15 {\n        fill: #040d2a;\n      }\n\n      .cls-16 {\n        stroke-width: 11px;\n      }\n\n      .cls-16, .cls-17, .cls-18, .cls-19, .cls-20, .cls-21, .cls-22, .cls-23, .cls-24, .cls-25, .cls-26, .cls-27 {\n        stroke-miterlimit: 10;\n      }\n\n      .cls-16, .cls-18, .cls-20, .cls-21, .cls-22, .cls-24, .cls-26, .cls-27 {\n        fill: none;\n      }\n\n      .cls-16, .cls-20, .cls-21, .cls-24, .cls-27 {\n        stroke: #00123f;\n      }\n\n      .cls-28 {\n        fill: #1a2c41;\n      }\n\n      .cls-29 {\n        fill: url(#linear-gradient-13);\n      }\n\n      .cls-29, .cls-30 {\n        opacity: .73;\n      }\n\n      .cls-31 {\n        fill: #2d3252;\n      }\n\n      .cls-32 {\n        fill: #223e7a;\n      }\n\n      .cls-33 {\n        mask: url(#mask);\n      }\n\n      .cls-17 {\n        fill: #844c38;\n        stroke: #734a44;\n      }\n\n      .cls-34 {\n        fill: #7082a9;\n      }\n\n      .cls-35 {\n        fill: #81735e;\n      }\n\n      .cls-36 {\n        fill: #2b4680;\n      }\n\n      .cls-37 {\n        fill: #354e86;\n      }\n\n      .cls-38 {\n        fill: #2e4882;\n      }\n\n      .cls-39 {\n        filter: url(#luminosity-noclip-2);\n      }\n\n      .cls-40 {\n        fill: url(#linear-gradient-4);\n      }\n\n      .cls-18 {\n        stroke: #604405;\n      }\n\n      .cls-30 {\n        fill: url(#linear-gradient-12);\n      }\n\n      .cls-19 {\n        fill: #e9c064;\n        stroke: #5f451b;\n      }\n\n      .cls-41 {\n        fill: #98947f;\n      }\n\n      .cls-42 {\n        fill: #2b3439;\n      }\n\n      .cls-43 {\n        mask: url(#mask-2);\n      }\n\n      .cls-44 {\n        filter: url(#luminosity-noclip-3);\n      }\n\n      .cls-45 {\n        fill: #5d7292;\n      }\n\n      .cls-46 {\n        fill: url(#linear-gradient-3);\n      }\n\n      .cls-47 {\n        fill: url(#linear-gradient-5);\n      }\n\n      .cls-48 {\n        fill: #d5c2bf;\n      }\n\n      .cls-49 {\n        fill: #1f3155;\n      }\n\n      .cls-50 {\n        fill: #f9f9b7;\n      }\n\n      .cls-51 {\n        opacity: .06;\n      }\n\n      .cls-51, .cls-52 {\n        mix-blend-mode: screen;\n      }\n\n      .cls-53 {\n        fill: #663c32;\n      }\n\n      .cls-54 {\n        fill: #919173;\n      }\n\n      .cls-55, .cls-23 {\n        fill: #fff8e5;\n      }\n\n      .cls-56 {\n        isolation: isolate;\n      }\n\n      .cls-57 {\n        fill: #7284aa;\n      }\n\n      .cls-20 {\n        stroke-width: 16px;\n      }\n\n      .cls-58 {\n        fill: #8a735a;\n      }\n\n      .cls-21 {\n        stroke-width: 5px;\n      }\n\n      .cls-59 {\n        fill: #d7c4be;\n      }\n\n      .cls-60 {\n        fill: url(#linear-gradient-8);\n      }\n\n      .cls-61 {\n        fill: #152a43;\n      }\n\n      .cls-62 {\n        fill: #0d1c47;\n      }\n\n      .cls-63 {\n        fill: #c9a99a;\n      }\n\n      .cls-22, .cls-23 {\n        stroke: #7f5e33;\n      }\n\n      .cls-64 {\n        fill: #192a43;\n      }\n\n      .cls-65 {\n        fill: #857460;\n      }\n\n      .cls-66 {\n        fill: #0d1b48;\n      }\n\n      .cls-67 {\n        fill: #7f5e33;\n      }\n\n      .cls-68 {\n        fill: #ac8e72;\n      }\n\n      .cls-69 {\n        fill: #1d3a78;\n      }\n\n      .cls-70 {\n        fill: #412c3b;\n      }\n\n      .cls-71 {\n        fill: #20346f;\n      }\n\n      .cls-24 {\n        stroke-width: 7px;\n      }\n\n      .cls-72 {\n        fill: url(#linear-gradient-7);\n      }\n\n      .cls-73 {\n        fill: #27427d;\n      }\n\n      .cls-74 {\n        fill: #181d3a;\n      }\n\n      .cls-75 {\n        fill: url(#linear-gradient-9);\n      }\n\n      .cls-76 {\n        fill: #24407c;\n      }\n\n      .cls-77 {\n        fill: #6b7da6;\n      }\n\n      .cls-78 {\n        fill: url(#linear-gradient-11);\n      }\n\n      .cls-79 {\n        fill: #e0d0c3;\n      }\n\n      .cls-80 {\n        fill: #324c84;\n      }\n\n      .cls-81 {\n        fill: #172a43;\n      }\n\n      .cls-82 {\n        fill: url(#linear-gradient-6);\n      }\n\n      .cls-83 {\n        fill: #faf3c9;\n      }\n\n      .cls-84 {\n        fill: #0d224f;\n      }\n\n      .cls-85 {\n        fill: #41414b;\n      }\n\n      .cls-86 {\n        fill: #3b4066;\n      }\n\n      .cls-25 {\n        fill: #debd87;\n      }\n\n      .cls-25, .cls-26 {\n        stroke: #332704;\n      }\n\n      .cls-87 {\n        fill: #6175a1;\n      }\n\n      .cls-88 {\n        fill: #29447f;\n      }\n\n      .cls-89 {\n        fill: #040b27;\n      }\n\n      .cls-90 {\n        fill: #3f2d39;\n      }\n\n      .cls-91 {\n        fill: #81735f;\n      }\n\n      .cls-92 {\n        fill: #2c4a80;\n      }\n\n      .cls-93 {\n        fill: #826f4f;\n      }\n\n      .cls-94 {\n        fill: #bcac71;\n      }\n\n      .cls-95 {\n        fill: url(#linear-gradient);\n      }\n\n      .cls-96 {\n        fill: #4f2f34;\n      }\n\n      .cls-97 {\n        fill: #8796b7;\n      }\n\n      .cls-98 {\n        fill: #784a3a;\n      }\n\n      .cls-99 {\n        fill: #215682;\n      }\n\n      .cls-27 {\n        stroke-width: 13px;\n      }\n\n      .cls-100 {\n        fill: #5f739f;\n      }\n\n      .cls-101 {\n        fill: #6d4038;\n      }\n\n      .cls-52 {\n        opacity: .46;\n      }\n\n      .cls-102 {\n        fill: #1e2657;\n      }\n\n      .cls-103 {\n        filter: url(#luminosity-noclip);\n      }\n    "
-).replace(/\.cls-/g, '#slide3-svg .cls-');
+const SCOPE_ID = "slide3-svg";
+const SLIDE3_SCOPED_CSS = scopeCss(SLIDE3_COVERUP_RAW_CSS, SCOPE_ID);
 
 const Slide3: React.FC<Slide3Props> = React.memo(({ scrollProgress = 0, ...props }) => {
+  const { MOUNT_AT, ENTRY_START, ENTRY_END, EXIT_START, EXIT_END } = SLIDE3;
 
-  // Mount as soon as Phase 2 curtain starts rising (0.65) so it's ready underneath
-  if (scrollProgress < 0.65) return null;
+  if (scrollProgress < MOUNT_AT) return null;
 
-  // Entry animations run during curtain HOLD (0.70 → 0.84).
-  // Exit synced with MountainCoverUp: starts when mountain is up (0.94), ends just before mountain exits (0.96).
-  const EXIT_START = 0.94;
-  const EXIT_END = 0.95; // ends before mountain exit completes at 0.96
+  const scrollValues = useMemo(() => {
+    const growUp = (s: number, e: number, from: number) => {
+      if (scrollProgress < s) return from;
+      if (scrollProgress <= e) return from * (1 - easeOut((scrollProgress - s) / (e - s)));
+      if (scrollProgress < EXIT_START) return 0;
+      if (scrollProgress <= EXIT_END) return from * easeOut((scrollProgress - EXIT_START) / (EXIT_END - EXIT_START));
+      return from;
+    };
 
-  // Helper: translateY from `from` px down to 0 (entry), then 0 to `from` (exit)
-  const growUp = (s: number, e: number, from: number) => {
-    if (scrollProgress < s) return from;
-    if (scrollProgress <= e) return from * (1 - (scrollProgress - s) / (e - s));
-    if (scrollProgress < EXIT_START) return 0;
-    if (scrollProgress <= EXIT_END) return from * (scrollProgress - EXIT_START) / (EXIT_END - EXIT_START);
-    return from;
-  };
-  // Helper: fade in (entry), fade out (exit)
-  const fadeIn = (s: number, e: number) => {
-    if (scrollProgress < s) return 0;
-    if (scrollProgress <= e) return (scrollProgress - s) / (e - s);
-    if (scrollProgress < EXIT_START) return 1;
-    if (scrollProgress <= EXIT_END) return 1 - (scrollProgress - EXIT_START) / (EXIT_END - EXIT_START);
-    return 0;
-  };
+    const fadeIn = (s: number, e: number) => {
+      if (scrollProgress < s) return 0;
+      if (scrollProgress <= e) return easeOut((scrollProgress - s) / (e - s));
+      if (scrollProgress < EXIT_START) return 1;
+      if (scrollProgress <= EXIT_END) return 1 - easeOut((scrollProgress - EXIT_START) / (EXIT_END - EXIT_START));
+      return 0;
+    };
 
-  // Wave 1 — bottom ground
-  const bottomGroundY = growUp(0.70, 0.76, 500);
+    return {
+      bottomGroundY: growUp(ENTRY_START, ENTRY_START + 0.04, 500),
+      leftHouseY: growUp(0.41, 0.45, 700),
+      middleHouseY: growUp(0.42, 0.46, 750),
+      rightHouseY: growUp(0.43, 0.47, 700),
+      buildingY: growUp(0.41, 0.45, 800),
+      rebarY: growUp(0.42, 0.46, 700),
+      workerY: growUp(0.43, 0.47, 700),
+      box1Y: growUp(0.42, 0.46, 700),
+      box2Y: growUp(0.43, 0.47, 700),
+      box3Y: growUp(0.44, 0.48, 700),
+      box4Y: growUp(0.45, 0.49, 700),
+      box5Y: growUp(0.43, 0.47, 650),
+      box6Y: growUp(0.44, 0.48, 650),
+      box7Y: growUp(0.45, 0.49, 650),
+      lantern1Y: growUp(0.44, 0.48, 500),
+      lantern1O: fadeIn(0.44, 0.48),
+      lantern2Y: growUp(0.45, 0.49, 500),
+      lantern2O: fadeIn(0.45, 0.49),
+      lantern3Y: growUp(0.46, ENTRY_END, 500),
+      lantern3O: fadeIn(0.46, ENTRY_END),
+      computerTableY: growUp(0.45, 0.49, 600),
+    };
+  }, [scrollProgress, ENTRY_START, ENTRY_END, EXIT_START, EXIT_END]);
 
-  // Wave 2 — houses
-  const leftHouseY   = growUp(0.71, 0.77, 700);
-  const middleHouseY = growUp(0.72, 0.78, 750);
-  const rightHouseY  = growUp(0.73, 0.79, 700);
-
-  // Wave 3 — construction structures
-  const buildingY  = growUp(0.71, 0.77, 800);
-  const rebarY     = growUp(0.72, 0.78, 700);
-  const workerY    = growUp(0.73, 0.79, 700);
-
-  // Wave 4 — box groups (staggered 0.01 apart)
-  const box1Y = growUp(0.72, 0.78, 700);
-  const box2Y = growUp(0.73, 0.79, 700);
-  const box3Y = growUp(0.74, 0.80, 700);
-  const box4Y = growUp(0.75, 0.81, 700);
-  const box5Y = growUp(0.73, 0.79, 650);
-  const box6Y = growUp(0.74, 0.80, 650);
-  const box7Y = growUp(0.75, 0.81, 650);
-
-  // Wave 5 — lanterns (translate + fade)
-  const lantern1Y = growUp(0.74, 0.80, 500);
-  const lantern1O = fadeIn(0.74, 0.80);
-  const lantern2Y = growUp(0.75, 0.81, 500);
-  const lantern2O = fadeIn(0.75, 0.81);
-  const lantern3Y = growUp(0.76, 0.82, 500);
-  const lantern3O = fadeIn(0.76, 0.82);
-
-  // Wave 6 — computer table
-  const computerTableY = growUp(0.75, 0.81, 600);
+  const { bottomGroundY, leftHouseY, middleHouseY, rightHouseY, buildingY, rebarY, workerY, box1Y, box2Y, box3Y, box4Y, box5Y, box6Y, box7Y, lantern1Y, lantern1O, lantern2Y, lantern2O, lantern3Y, lantern3O, computerTableY } = scrollValues;
 
   return (
   <svg

@@ -1,4 +1,6 @@
 import * as React from "react";
+import { bounceOut } from "../utils/easing";
+import { MOUNTAIN } from "../constants/timeline";
 
 interface MountainCoverUpProps extends React.SVGProps<SVGSVGElement> {
   scrollProgress?: number;
@@ -9,40 +11,26 @@ const MOUNTAIN_PATH =
 
 const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
   ({ scrollProgress = 0, ...props }) => {
-    // Bouncy easing: overshoots slightly at the end
-    const bounceOut = (t: number): number => {
-      if (t <= 0) return 0;
-      if (t >= 1) return 1;
-      if (t < 0.7) return t / 0.7;
-      const x = (t - 0.7) / 0.3;
-      return 1 + Math.sin(x * Math.PI) * 0.06;
-    };
+    const { REST_Y, CURTAIN_ENTRANCE_START, CURTAIN_ENTRANCE_END, EXIT_START, EXIT_END, M2_ENTRANCE_START, M2_ENTRANCE_END, M3_ENTRANCE_START, M3_ENTRANCE_END, CONTAINER_VISIBLE_AT } = MOUNTAIN;
 
-    // Mountain 1: from BOTTOM (curtain) — entrance 0.91→0.94, exit 0.94→0.96 (reverse: sinks back down, done before metro)
-    const REST_Y = 100;
-    const EXIT_START = 0.94;
-    const EXIT_END = 0.96;
     const getCurtainY = (): string => {
-      if (scrollProgress < 0.91) return `${REST_Y}%`;
-      if (scrollProgress <= 0.94) {
-        const p = (scrollProgress - 0.91) / (0.94 - 0.91);
-        const bounced = bounceOut(p);
-        return `${REST_Y - REST_Y * bounced}%`;
+      if (scrollProgress < CURTAIN_ENTRANCE_START) return `${REST_Y}%`;
+      if (scrollProgress <= CURTAIN_ENTRANCE_END) {
+        const p = bounceOut((scrollProgress - CURTAIN_ENTRANCE_START) / (CURTAIN_ENTRANCE_END - CURTAIN_ENTRANCE_START));
+        return `${REST_Y - REST_Y * p}%`;
       }
       if (scrollProgress < EXIT_START) return "0%";
       if (scrollProgress <= EXIT_END) {
-        const exitP = (scrollProgress - EXIT_START) / (EXIT_END - EXIT_START);
-        const bounced = bounceOut(exitP);
-        return `${REST_Y * bounced}%`; // 0 → 100% (sinks down, reverse of entrance)
+        const exitP = bounceOut((scrollProgress - EXIT_START) / (EXIT_END - EXIT_START));
+        return `${REST_Y * exitP}%`;
       }
       return `${REST_Y}%`;
     };
 
-    // Mountain 2: from LEFT — entrance 0.92→0.94, exit 0.94→0.96 (reverse: goes back left)
     const getM2Progress = (): number => {
-      if (scrollProgress < 0.92) return 0;
-      if (scrollProgress > 0.94) return 1;
-      return (scrollProgress - 0.92) / (0.94 - 0.92);
+      if (scrollProgress < M2_ENTRANCE_START) return 0;
+      if (scrollProgress > M2_ENTRANCE_END) return 1;
+      return (scrollProgress - M2_ENTRANCE_START) / (M2_ENTRANCE_END - M2_ENTRANCE_START);
     };
     const getM2ExitProgress = (): number => {
       if (scrollProgress < EXIT_START) return 0;
@@ -55,11 +43,10 @@ const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
       ? `calc(-80vw * ${1 - m2In})` // entrance: off-screen left → 0
       : `calc(-80vw * ${m2Exit})`;   // exit: 0 → off-screen left (reverse)
 
-    // Mountain 3: from RIGHT — entrance 0.93→0.94, exit 0.94→0.96 (reverse: goes back right)
     const getM3Progress = (): number => {
-      if (scrollProgress < 0.93) return 0;
-      if (scrollProgress > 0.94) return 1;
-      return (scrollProgress - 0.93) / (0.94 - 0.93);
+      if (scrollProgress < M3_ENTRANCE_START) return 0;
+      if (scrollProgress > M3_ENTRANCE_END) return 1;
+      return (scrollProgress - M3_ENTRANCE_START) / (M3_ENTRANCE_END - M3_ENTRANCE_START);
     };
     const getM3ExitProgress = (): number => {
       if (scrollProgress < EXIT_START) return 0;
@@ -72,9 +59,8 @@ const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
       ? `calc(80vw * ${1 - m3In})`  // entrance: off-screen right → 0
       : `calc(80vw * ${m3Exit})`;   // exit: 0 → off-screen right (reverse)
 
-    // Visible when entering section 4 (0.90+), hide after exit completes (0.96+)
     const getContainerOpacity = (): number => {
-      if (scrollProgress < 0.90) return 0;
+      if (scrollProgress < CONTAINER_VISIBLE_AT) return 0;
       if (scrollProgress <= EXIT_END) return 1;
       return 0;
     };
@@ -94,7 +80,6 @@ const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
           height: "100%",
           opacity: containerOpacity,
           transform: `translateY(${getCurtainY()})`,
-          transition: "opacity 0.15s ease-out, transform 0.12s ease-out",
           willChange: "transform",
           pointerEvents: "none",
         }}

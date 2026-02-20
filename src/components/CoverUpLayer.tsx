@@ -1,40 +1,37 @@
 import * as React from "react";
+import { scopeCss } from "../utils/scopedCss";
+import { COVERUP } from "../constants/timeline";
+import { easeOut } from "../utils/easing";
+import { SLIDE3_COVERUP_RAW_CSS } from "../styles/slide3-coverup-shared.css";
 
 interface CoverUpLayerProps extends React.SVGProps<SVGSVGElement> {
   scrollProgress?: number;
 }
 
-// Scoped once at module load — prevents .cls-* collisions with other slides
-const COVERUP_SCOPED_CSS = (
-  "\n      .cls-1 {\n        fill: #152d69;\n      }\n\n      .cls-2 {\n        fill: #4874cb;\n      }\n\n      .cls-3 {\n        fill: #68423e;\n      }\n\n      .cls-4 {\n        fill: url(#linear-gradient-2);\n      }\n\n      .cls-5 {\n        fill: #8090b3;\n      }\n\n      .cls-6 {\n        fill: #0d1a44;\n      }\n\n      .cls-7 {\n        fill: #00123f;\n      }\n\n      .cls-8 {\n        mask: url(#mask-1);\n      }\n\n      .cls-9 {\n        fill: #183577;\n      }\n\n      .cls-10 {\n        fill: url(#linear-gradient-10);\n      }\n\n      .cls-11 {\n        fill: #6d7fa8;\n      }\n\n      .cls-12 {\n        fill: #304a83;\n      }\n\n      .cls-13 {\n        fill: #143172;\n      }\n\n      .cls-14 {\n        fill: #212f3e;\n      }\n\n      .cls-15 {\n        fill: #040d2a;\n      }\n\n      .cls-16 {\n        stroke-width: 11px;\n      }\n\n      .cls-16, .cls-17, .cls-18, .cls-19, .cls-20, .cls-21, .cls-22, .cls-23, .cls-24, .cls-25, .cls-26, .cls-27 {\n        stroke-miterlimit: 10;\n      }\n\n      .cls-16, .cls-18, .cls-20, .cls-21, .cls-22, .cls-24, .cls-26, .cls-27 {\n        fill: none;\n      }\n\n      .cls-16, .cls-20, .cls-21, .cls-24, .cls-27 {\n        stroke: #00123f;\n      }\n\n      .cls-28 {\n        fill: #1a2c41;\n      }\n\n      .cls-29 {\n        fill: url(#linear-gradient-13);\n      }\n\n      .cls-29, .cls-30 {\n        opacity: .73;\n      }\n\n      .cls-31 {\n        fill: #2d3252;\n      }\n\n      .cls-32 {\n        fill: #223e7a;\n      }\n\n      .cls-33 {\n        mask: url(#mask);\n      }\n\n      .cls-17 {\n        fill: #844c38;\n        stroke: #734a44;\n      }\n\n      .cls-34 {\n        fill: #7082a9;\n      }\n\n      .cls-35 {\n        fill: #81735e;\n      }\n\n      .cls-36 {\n        fill: #2b4680;\n      }\n\n      .cls-37 {\n        fill: #354e86;\n      }\n\n      .cls-38 {\n        fill: #2e4882;\n      }\n\n      .cls-39 {\n        filter: url(#luminosity-noclip-2);\n      }\n\n      .cls-40 {\n        fill: url(#linear-gradient-4);\n      }\n\n      .cls-18 {\n        stroke: #604405;\n      }\n\n      .cls-30 {\n        fill: url(#linear-gradient-12);\n      }\n\n      .cls-19 {\n        fill: #e9c064;\n        stroke: #5f451b;\n      }\n\n      .cls-41 {\n        fill: #98947f;\n      }\n\n      .cls-42 {\n        fill: #2b3439;\n      }\n\n      .cls-43 {\n        mask: url(#mask-2);\n      }\n\n      .cls-44 {\n        filter: url(#luminosity-noclip-3);\n      }\n\n      .cls-45 {\n        fill: #5d7292;\n      }\n\n      .cls-46 {\n        fill: url(#linear-gradient-3);\n      }\n\n      .cls-47 {\n        fill: url(#linear-gradient-5);\n      }\n\n      .cls-48 {\n        fill: #d5c2bf;\n      }\n\n      .cls-49 {\n        fill: #1f3155;\n      }\n\n      .cls-50 {\n        fill: #f9f9b7;\n      }\n\n      .cls-51 {\n        opacity: .06;\n      }\n\n      .cls-51, .cls-52 {\n        mix-blend-mode: screen;\n      }\n\n      .cls-53 {\n        fill: #663c32;\n      }\n\n      .cls-54 {\n        fill: #919173;\n      }\n\n      .cls-55, .cls-23 {\n        fill: #fff8e5;\n      }\n\n      .cls-56 {\n        isolation: isolate;\n      }\n\n      .cls-57 {\n        fill: #7284aa;\n      }\n\n      .cls-20 {\n        stroke-width: 16px;\n      }\n\n      .cls-58 {\n        fill: #8a735a;\n      }\n\n      .cls-21 {\n        stroke-width: 5px;\n      }\n\n      .cls-59 {\n        fill: #d7c4be;\n      }\n\n      .cls-60 {\n        fill: url(#linear-gradient-8);\n      }\n\n      .cls-61 {\n        fill: #152a43;\n      }\n\n      .cls-62 {\n        fill: #0d1c47;\n      }\n\n      .cls-63 {\n        fill: #c9a99a;\n      }\n\n      .cls-22, .cls-23 {\n        stroke: #7f5e33;\n      }\n\n      .cls-64 {\n        fill: #192a43;\n      }\n\n      .cls-65 {\n        fill: #857460;\n      }\n\n      .cls-66 {\n        fill: #0d1b48;\n      }\n\n      .cls-67 {\n        fill: #7f5e33;\n      }\n\n      .cls-68 {\n        fill: #ac8e72;\n      }\n\n      .cls-69 {\n        fill: #1d3a78;\n      }\n\n      .cls-70 {\n        fill: #412c3b;\n      }\n\n      .cls-71 {\n        fill: #20346f;\n      }\n\n      .cls-24 {\n        stroke-width: 7px;\n      }\n\n      .cls-72 {\n        fill: url(#linear-gradient-7);\n      }\n\n      .cls-73 {\n        fill: #27427d;\n      }\n\n      .cls-74 {\n        fill: #181d3a;\n      }\n\n      .cls-75 {\n        fill: url(#linear-gradient-9);\n      }\n\n      .cls-76 {\n        fill: #24407c;\n      }\n\n      .cls-77 {\n        fill: #6b7da6;\n      }\n\n      .cls-78 {\n        fill: url(#linear-gradient-11);\n      }\n\n      .cls-79 {\n        fill: #e0d0c3;\n      }\n\n      .cls-80 {\n        fill: #324c84;\n      }\n\n      .cls-81 {\n        fill: #172a43;\n      }\n\n      .cls-82 {\n        fill: url(#linear-gradient-6);\n      }\n\n      .cls-83 {\n        fill: #faf3c9;\n      }\n\n      .cls-84 {\n        fill: #0d224f;\n      }\n\n      .cls-85 {\n        fill: #41414b;\n      }\n\n      .cls-86 {\n        fill: #3b4066;\n      }\n\n      .cls-25 {\n        fill: #debd87;\n      }\n\n      .cls-25, .cls-26 {\n        stroke: #332704;\n      }\n\n      .cls-87 {\n        fill: #6175a1;\n      }\n\n      .cls-88 {\n        fill: #29447f;\n      }\n\n      .cls-89 {\n        fill: #040b27;\n      }\n\n      .cls-90 {\n        fill: #3f2d39;\n      }\n\n      .cls-91 {\n        fill: #81735f;\n      }\n\n      .cls-92 {\n        fill: #2c4a80;\n      }\n\n      .cls-93 {\n        fill: #826f4f;\n      }\n\n      .cls-94 {\n        fill: #bcac71;\n      }\n\n      .cls-95 {\n        fill: url(#linear-gradient);\n      }\n\n      .cls-96 {\n        fill: #4f2f34;\n      }\n\n      .cls-97 {\n        fill: #8796b7;\n      }\n\n      .cls-98 {\n        fill: #784a3a;\n      }\n\n      .cls-99 {\n        fill: #215682;\n      }\n\n      .cls-27 {\n        stroke-width: 13px;\n      }\n\n      .cls-100 {\n        fill: #5f739f;\n      }\n\n      .cls-101 {\n        fill: #6d4038;\n      }\n\n      .cls-52 {\n        opacity: .46;\n      }\n\n      .cls-102 {\n        fill: #1e2657;\n      }\n\n      .cls-103 {\n        filter: url(#luminosity-noclip);\n      }\n    "
-).replace(/\.cls-/g, '#coverup-svg .cls-');
+const SCOPE_ID = "coverup-svg";
+const COVERUP_SCOPED_CSS = scopeCss(SLIDE3_COVERUP_RAW_CSS, SCOPE_ID);
 
 const CoverUpLayer: React.FC<CoverUpLayerProps> = React.memo(({ scrollProgress = 0, ...props }) => {
-  // Two-phase curtain — one per section transition
-  // Phase 1 (Section 1→2):  rise 0.22→0.27 | hold →0.47 | fall 0.47→0.54
-  // Phase 2 (Section 2→3):  rise 0.60→0.65 | hold →0.84 | fall 0.84→0.91
-  //   Curtain is fully up at 0.65 so Slide2 snap-exit happens behind it.
-  // REST_Y: resting translateY — curtain peeks into the bottom of the scene
-  const REST_Y = 30;
+  const { REST_Y, PHASE1_RISE_START, PHASE1_RISE_END, PHASE1_HOLD_END, PHASE1_FALL_END, PHASE2_RISE_START, PHASE2_RISE_END, PHASE2_HOLD_END, PHASE2_FALL_END } = COVERUP;
   const getCurtainY = (): string => {
     // Phase 1
-    if (scrollProgress >= 0.22 && scrollProgress <= 0.54) {
-      if (scrollProgress <= 0.27) {
-        const p = (scrollProgress - 0.22) / (0.27 - 0.22);
+    if (scrollProgress >= PHASE1_RISE_START && scrollProgress <= PHASE1_FALL_END) {
+      if (scrollProgress <= PHASE1_RISE_END) {
+        const p = easeOut((scrollProgress - PHASE1_RISE_START) / (PHASE1_RISE_END - PHASE1_RISE_START));
         return `${REST_Y - REST_Y * p}%`;
       }
-      if (scrollProgress <= 0.47) return '0%';
-      const p = (scrollProgress - 0.47) / (0.54 - 0.47);
+      if (scrollProgress <= PHASE1_HOLD_END) return '0%';
+      const p = easeOut((scrollProgress - PHASE1_HOLD_END) / (PHASE1_FALL_END - PHASE1_HOLD_END));
       return `${REST_Y * p}%`;
     }
     // Phase 2
-    if (scrollProgress >= 0.60 && scrollProgress <= 0.91) {
-      if (scrollProgress <= 0.65) {
-        const p = (scrollProgress - 0.60) / (0.65 - 0.60);
+    if (scrollProgress >= PHASE2_RISE_START && scrollProgress <= PHASE2_FALL_END) {
+      if (scrollProgress <= PHASE2_RISE_END) {
+        const p = easeOut((scrollProgress - PHASE2_RISE_START) / (PHASE2_RISE_END - PHASE2_RISE_START));
         return `${REST_Y - REST_Y * p}%`;
       }
-      if (scrollProgress <= 0.84) return '0%';
-      const p = (scrollProgress - 0.84) / (0.91 - 0.84);
+      if (scrollProgress <= PHASE2_HOLD_END) return '0%';
+      const p = easeOut((scrollProgress - PHASE2_HOLD_END) / (PHASE2_FALL_END - PHASE2_HOLD_END));
       return `${REST_Y * p}%`;
     }
     return `${REST_Y}%`;
@@ -53,7 +50,6 @@ const CoverUpLayer: React.FC<CoverUpLayerProps> = React.memo(({ scrollProgress =
         width: '100%',
         height: '100%',
         transform: `translateY(${getCurtainY()})`,
-        transition: 'transform 0.12s ease-out',
         willChange: 'transform',
       }}
     {...props}

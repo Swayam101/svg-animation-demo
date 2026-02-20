@@ -1,4 +1,5 @@
 import * as React from "react";
+import { scopeCss } from "../utils/scopedCss";
 
 interface CloudsLayerProps extends React.SVGProps<SVGSVGElement> {
   scrollProgress?: number;
@@ -6,11 +7,11 @@ interface CloudsLayerProps extends React.SVGProps<SVGSVGElement> {
 
 // viewBox from clouds.svg; same structure as MountainCoverUp, CoverUpLayer
 const VIEW_BOX = "0 0 1542.68 1129.15";
-
-// Only the classes used by cloud paths — scoped to avoid conflicts
-const CLOUDS_SCOPED_CSS = (
-  "\n      .cls-51 { fill: #fffffb; }\n      .cls-60 { fill: #e1f2fa; }\n      .cls-96 { fill: #e0f1fb; }\n      .cls-163 { fill: #fbfffe; }\n      .cls-89 { isolation: isolate; }\n      @keyframes clouds-fluff {\n        0%, 100% { transform: scale(1) translateY(0); }\n        50% { transform: scale(1.03) translateY(-2px); }\n      }\n      .cloud-fluff { animation: clouds-fluff 4s ease-in-out infinite; transform-origin: center; }\n    "
-).replace(/\.cls-/g, "#clouds-svg .cls-");
+const SCOPE_ID = "clouds-svg";
+const CLOUDS_SCOPED_CSS = scopeCss(
+  "\n      .cls-51 { fill: #fffffb; }\n      .cls-60 { fill: #e1f2fa; }\n      .cls-96 { fill: #e0f1fb; }\n      .cls-163 { fill: #fbfffe; }\n      .cls-89 { isolation: isolate; }\n      @keyframes clouds-fluff {\n        0%, 100% { transform: scale(1) translateY(0); }\n        50% { transform: scale(1.03) translateY(-2px); }\n      }\n      .cloud-fluff { animation: clouds-fluff 4s ease-in-out infinite; transform-origin: center; }\n    ",
+  SCOPE_ID
+);
 
 // Scroll-driven: each cloud moves based on scrollProgress. dir: -1 left, 1 right. phase offsets so they don't wrap in sync.
 const CLOUD_CONFIG = [
@@ -25,14 +26,18 @@ const VIEW_WIDTH = 1542.68; // viewBox width — clouds wrap and reappear from o
 
 const CloudsLayer: React.FC<CloudsLayerProps> = React.memo(
   ({ scrollProgress = 0, ...props }) => {
-    const cloudTranslates = CLOUD_CONFIG.map((c) => {
-      const raw = (scrollProgress + c.phase) * BASE_DISTANCE * c.speed;
-      const wrapped = ((raw % VIEW_WIDTH) + VIEW_WIDTH) % VIEW_WIDTH;
-      const t = wrapped / VIEW_WIDTH; // 0..1
-      // Left: enter from right (+VIEW_WIDTH), exit left (-VIEW_WIDTH)
-      // Right: enter from left (-VIEW_WIDTH), exit right (+VIEW_WIDTH) — full traverse
-      return c.dir === -1 ? VIEW_WIDTH * (1 - 2 * t) : VIEW_WIDTH * (2 * t - 1);
-    });
+    const cloudTranslates = React.useMemo(
+      () =>
+        CLOUD_CONFIG.map((c) => {
+          const raw = (scrollProgress + c.phase) * BASE_DISTANCE * c.speed;
+          const wrapped = ((raw % VIEW_WIDTH) + VIEW_WIDTH) % VIEW_WIDTH;
+          const t = wrapped / VIEW_WIDTH; // 0..1
+          // Left: enter from right (+VIEW_WIDTH), exit left (-VIEW_WIDTH)
+          // Right: enter from left (-VIEW_WIDTH), exit right (+VIEW_WIDTH) — full traverse
+          return c.dir === -1 ? VIEW_WIDTH * (1 - 2 * t) : VIEW_WIDTH * (2 * t - 1);
+        }),
+      [scrollProgress]
+    );
 
     return (
       <svg
@@ -54,7 +59,7 @@ const CloudsLayer: React.FC<CloudsLayerProps> = React.memo(
         <defs>
           <style>{CLOUDS_SCOPED_CSS}</style>
         </defs>
-        <g className="cls-89" transform="matrix(1.009585, 0, 0, 1.082279, -6.919415, 0)">
+        <g className="cls-89" transform="matrix(1.009585, 0, 0, 1.082279, -6.919415, 25)">
           <g id="Layer_2" data-name="Layer 2">
             <g id="Layer_1-2" data-name="Layer 1">
               <g>
