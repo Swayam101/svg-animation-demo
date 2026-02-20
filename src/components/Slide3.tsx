@@ -12,7 +12,8 @@ const SLIDE3_SCOPED_CSS = (
 const Slide3: React.FC<Slide3Props> = React.memo(({ scrollProgress = 0, ...props }) => {
 
   // Mount when Phase 2 curtain starts rising (0.42). Sequential: Slide3 ends before Slide4/Metro at 0.65.
-  if (scrollProgress < 0.42) return null;
+  // Unmount when fully exited to avoid DOM + SMIL animation overhead during MountainCoverUp.
+  if (scrollProgress < 0.42 || scrollProgress > 0.65) return null;
 
   // Entry during curtain HOLD (0.45 → 0.55). Exit 0.62→0.65 so Slide4/Metro start clean at 0.65.
   const EXIT_START = 0.62;

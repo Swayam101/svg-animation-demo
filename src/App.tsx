@@ -87,7 +87,7 @@ const App: React.FC = () => {
 
             {/* Layer 9: MountainCoverUp - mountains curtain when entering 4th section, exits 0.99→1.0, then metro shows */}
             <Layer zIndex={11}>
-              <MountainCoverUp scrollProgress={scrollProgress} />
+              <MountainCoverUp scrollProgress={deferredScrollProgress} />
             </Layer>
 
             {/* Layer 10: CloudsLayer - decorative, uses deferred scroll */}

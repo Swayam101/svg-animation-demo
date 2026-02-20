@@ -9,15 +9,15 @@ const SHOOTING_STARS_CSS = (
   "\n      .cls-29 { fill: url(#ss-linear-gradient-13); }\n      .cls-30 { fill: url(#ss-linear-gradient-12); }\n      .cls-29, .cls-30 { opacity: .73; }\n    "
 ).replace(/\.cls-/g, '#shooting-stars-svg .cls-');
 
-// 7 varied paths: star flies from upper-right (sx,sy) → lower-left (ex,ey)
+// 7 varied paths: short diagonal, upper-right → lower-left.
 const STAR_PATHS = [
-  { sx: 1600, sy: -300, ex: -600, ey:  280 },
-  { sx: 1900, sy: -150, ex: -400, ey:  180 },
-  { sx: 1500, sy: -500, ex: -300, ey:  250 },
-  { sx: 2100, sy: -250, ex: -700, ey:  220 },
-  { sx: 1700, sy: -100, ex: -500, ey:  150 },
-  { sx: 1800, sy: -600, ex: -200, ey:  300 },
-  { sx: 2000, sy: -380, ex: -450, ey:  200 },
+  { sx: 1320, sy: -50, ex: 720, ey:  120 },
+  { sx: 1370, sy: -30, ex: 770, ey:  100 },
+  { sx: 1270, sy: -80, ex: 670, ey:  130 },
+  { sx: 1400, sy: -45, ex: 700, ey:  115 },
+  { sx: 1340, sy: -25, ex: 740, ey:  95 },
+  { sx: 1300, sy: -65, ex: 700, ey:  125 },
+  { sx: 1380, sy: -55, ex: 680, ey:  110 },
 ] as const;
 
 // 3 scroll events — 1 per scene, aligned with sequential timeline

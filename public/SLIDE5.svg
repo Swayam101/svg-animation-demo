@@ -203,6 +203,10 @@
         fill: #fff;
       }
 
+      #billboards-all rect.cls-55 {
+        fill: #000 !important;
+      }
+
       .cls-56 {
         mask: url(#mask);
       }
@@ -3973,8 +3977,9 @@
             <g id="billboard-3">
               <polygon class="cls-92" points="950.92 582.09 947.85 565.24 872.79 562.52 871.26 583.11 950.92 582.09"/>
               <g>
-                <rect class="cls-55" x="868.04" y="478.3" width="86.37" height="92.87"/>
+                <rect class="cls-55" x="868.04" y="478.3" width="86.37" height="92.87" fill="#000"/>
                 <path class="cls-165" d="M952.91,479.8v89.87h-83.37v-89.87h83.37M955.91,476.8h-89.37v95.87h89.37v-95.87h0Z"/>
+                <image x="868.04" y="478.3" width="86.37" height="92.87" href="/incomingclass.png" preserveAspectRatio="xMidYMid slice"/>
                 <rect class="cls-1" x="866.54" y="476.8" width="89.37" height="95.87"/>
               </g>
             </g>
@@ -3983,16 +3988,18 @@
               <polygon class="cls-131" points="1223.27 628.19 1217.75 628.66 1216.69 628.06 1223.27 628.19"/>
               <rect class="cls-131" x="1131.26" y="457.94" width="92.17" height="175.21"/>
               <g>
-                <rect class="cls-55" x="1124.08" y="455.59" width="90.7" height="170.11"/>
+                <rect class="cls-55" x="1124.08" y="455.59" width="90.7" height="170.11" fill="#000"/>
                 <path class="cls-165" d="M1213.28,457.09v167.11h-87.7v-167.11h87.7M1216.28,454.09h-93.7v173.11h93.7v-173.11h0Z"/>
+                <image x="1124.08" y="455.59" width="90.7" height="170.11" href="/slinky-mobile.png" preserveAspectRatio="xMidYMid slice"/>
                 <rect class="cls-1" x="1122.58" y="454.09" width="93.7" height="173.11"/>
               </g>
               <rect class="cls-13" x="1165.73" y="626.18" width="8.17" height="46.98"/>
               <polyline class="cls-131" points="1131.26 633.15 1121.3 628.86 1137.51 628.73 1131.26 633.15"/>
             </g>
             <g id="billboard-2">
-              <rect class="cls-55" x="503.94" y="447.45" width="97.02" height="48.51"/>
+              <rect class="cls-55" x="503.94" y="447.45" width="97.02" height="48.51" fill="#000"/>
               <path class="cls-165" d="M599.96,448.45v46.51h-95.02v-46.51h95.02M600.96,447.45h-97.02v48.51h97.02v-48.51h0Z"/>
+              <image x="503.94" y="447.45" width="97.02" height="48.51" href="/hashium.png" preserveAspectRatio="xMidYMid slice"/>
               <rect class="cls-6" x="503.94" y="447.45" width="97.02" height="48.51"/>
             </g>
             <g id="billboard-1">
@@ -4006,8 +4013,9 @@
                 <polygon class="cls-160" points="375.04 770.76 378.27 777.99 385.34 769.56 375.04 770.76"/>
                 <rect class="cls-160" x="379.08" y="701.22" width="138.89" height="69.45"/>
                 <g>
-                  <rect class="cls-55" x="377.08" y="701.22" width="138.89" height="69.45"/>
+                  <rect class="cls-55" x="377.08" y="701.22" width="138.89" height="69.45" fill="#000"/>
                   <path class="cls-165" d="M514.98,702.22v67.45h-136.89v-67.45h136.89M515.98,701.22h-138.89v69.45h138.89v-69.45h0Z"/>
+                  <image x="377.08" y="701.22" width="138.89" height="69.45" href="/xautomation.png" preserveAspectRatio="xMidYMid slice"/>
                   <rect class="cls-6" x="377.08" y="701.22" width="138.89" height="69.45"/>
                 </g>
               </g>
@@ -4023,8 +4031,9 @@
                 <polygon class="cls-160" points="1283.08 747.32 1278.51 758.28 1268.51 745.52 1283.08 747.32"/>
                 <rect class="cls-160" x="1085.69" y="641.99" width="196.51" height="105.2"/>
                 <g>
-                  <rect class="cls-55" x="1083.69" y="641.99" width="196.51" height="105.2"/>
+                  <rect class="cls-55" x="1083.69" y="641.99" width="196.51" height="105.2" fill="#000"/>
                   <path class="cls-165" d="M1279.19,642.99v103.2h-194.51v-103.2h194.51M1280.19,641.99h-196.51v105.2h196.51v-105.2h0Z"/>
+                  <image x="1083.69" y="641.99" width="196.51" height="105.2" href="/slinky.png" preserveAspectRatio="xMidYMid slice"/>
                   <rect class="cls-6" x="1083.69" y="641.99" width="196.51" height="105.2"/>
                 </g>
               </g>

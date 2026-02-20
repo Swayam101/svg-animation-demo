@@ -68,6 +68,8 @@ const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
           opacity: getContainerOpacity(),
           willChange: "transform",
           pointerEvents: "none",
+          contain: "paint",
+          transform: "translateZ(0)",
         }}
         {...props}
       >
@@ -82,7 +84,7 @@ const MountainCoverUp: React.FC<MountainCoverUpProps> = React.memo(
                   <g
                     key={i}
                     style={{
-                      transform: `translate(${layer.xTranslate}, ${curtainY}) scale(${layer.scale})`,
+                      transform: `translate3d(${layer.xTranslate}, ${curtainY}, 0) scale(${layer.scale})`,
                       transformOrigin: "center bottom",
                       willChange: "transform",
                     }}
