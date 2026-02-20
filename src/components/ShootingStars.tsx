@@ -20,12 +20,12 @@ const STAR_PATHS = [
   { sx: 2000, sy: -380, ex: -450, ey:  500 },
 ] as const;
 
-// 3 scroll events — 1 per scene, wider ranges = slower travel
-// scene 1: 0.00–0.27  scene 2: 0.27–0.65  scene 3: 0.65–1.00
+// 3 scroll events — 1 per scene, aligned with sequential timeline
+// scene 1: desert 0.00–0.22  scene 2: construction 0.22–0.55  scene 3: metro 0.65–0.92
 const EVENTS = [
-  { s: 0.04, e: 0.22, p: 3 }, // scene 1 — one star
-  { s: 0.32, e: 0.55, p: 5 }, // scene 2 — one star
-  { s: 0.70, e: 0.92, p: 1 }, // scene 3 — one star
+  { s: 0.04, e: 0.18, p: 3 }, // scene 1 — desert
+  { s: 0.25, e: 0.35, p: 5 }, // scene 2 — construction
+  { s: 0.68, e: 0.90, p: 1 }, // scene 3 — metro
 ] as const;
 
 // Compute the animated state for a star given the events it participates in

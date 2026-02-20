@@ -17,14 +17,19 @@ const METRO_TRAVEL_START = -500;
 const METRO_TRAVEL_END = 2000;
 const METRO_TRAVEL_RANGE = METRO_TRAVEL_END - METRO_TRAVEL_START;
 
-// Mountain exits 0.94→0.96. Metro base (tracks) appears when mountain is up; train finishes before last building.
-const METRO_SHOW_AT = 0.94; // metro base visible before mountain exits
-const TRAVEL_START = 0.94;
-const TRAVEL_END = 0.96; // train done by 0.96; buildings keep animating until 1.0
+// Metro runs through most of section 4. Mountain (0.91→0.96) overlays during its rise/exit.
+const METRO_SHOW_AT = 0.65;
+const TRAVEL_START = 0.65;
+const TRAVEL_END = 0.98; // train travels 0.65→0.98 (~33% of scroll)
+
+const easeOut = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : 1 - (1 - t) * (1 - t));
 
 const MetroOverlay: React.FC<MetroOverlayProps> = React.memo(({ scrollProgress = 0, ...props }) => {
-  // No fade — appears instantly when mountain has completely exited
-  const opacity = scrollProgress >= METRO_SHOW_AT ? 1 : 0;
+  let opacity: number;
+  if (scrollProgress < METRO_SHOW_AT) opacity = 0;
+  else if (scrollProgress < TRAVEL_END) opacity = 1;
+  else if (scrollProgress >= 1) opacity = 0;
+  else opacity = 1 - easeOut((scrollProgress - TRAVEL_END) / (1 - TRAVEL_END));
 
   // Train travels left→right only AFTER mountain is gone (0.92→1.0 = 8% scroll)
   const metroTranslateX =

@@ -11,13 +11,12 @@ const SLIDE3_SCOPED_CSS = (
 
 const Slide3: React.FC<Slide3Props> = React.memo(({ scrollProgress = 0, ...props }) => {
 
-  // Mount as soon as Phase 2 curtain starts rising (0.65) so it's ready underneath
-  if (scrollProgress < 0.65) return null;
+  // Mount when Phase 2 curtain starts rising (0.42). Sequential: Slide3 ends before Slide4/Metro at 0.65.
+  if (scrollProgress < 0.42) return null;
 
-  // Entry animations run during curtain HOLD (0.70 → 0.84).
-  // Exit synced with MountainCoverUp: starts when mountain is up (0.94), ends just before mountain exits (0.96).
-  const EXIT_START = 0.94;
-  const EXIT_END = 0.95; // ends before mountain exit completes at 0.96
+  // Entry during curtain HOLD (0.45 → 0.55). Exit 0.62→0.65 so Slide4/Metro start clean at 0.65.
+  const EXIT_START = 0.62;
+  const EXIT_END = 0.65;
 
   // Helper: translateY from `from` px down to 0 (entry), then 0 to `from` (exit)
   const growUp = (s: number, e: number, from: number) => {
@@ -37,37 +36,37 @@ const Slide3: React.FC<Slide3Props> = React.memo(({ scrollProgress = 0, ...props
   };
 
   // Wave 1 — bottom ground
-  const bottomGroundY = growUp(0.70, 0.76, 500);
+  const bottomGroundY = growUp(0.45, 0.50, 500);
 
   // Wave 2 — houses
-  const leftHouseY   = growUp(0.71, 0.77, 700);
-  const middleHouseY = growUp(0.72, 0.78, 750);
-  const rightHouseY  = growUp(0.73, 0.79, 700);
+  const leftHouseY   = growUp(0.46, 0.51, 700);
+  const middleHouseY = growUp(0.47, 0.52, 750);
+  const rightHouseY  = growUp(0.48, 0.53, 700);
 
   // Wave 3 — construction structures
-  const buildingY  = growUp(0.71, 0.77, 800);
-  const rebarY     = growUp(0.72, 0.78, 700);
-  const workerY    = growUp(0.73, 0.79, 700);
+  const buildingY  = growUp(0.46, 0.51, 800);
+  const rebarY     = growUp(0.47, 0.52, 700);
+  const workerY    = growUp(0.48, 0.53, 700);
 
   // Wave 4 — box groups (staggered 0.01 apart)
-  const box1Y = growUp(0.72, 0.78, 700);
-  const box2Y = growUp(0.73, 0.79, 700);
-  const box3Y = growUp(0.74, 0.80, 700);
-  const box4Y = growUp(0.75, 0.81, 700);
-  const box5Y = growUp(0.73, 0.79, 650);
-  const box6Y = growUp(0.74, 0.80, 650);
-  const box7Y = growUp(0.75, 0.81, 650);
+  const box1Y = growUp(0.47, 0.52, 700);
+  const box2Y = growUp(0.48, 0.53, 700);
+  const box3Y = growUp(0.49, 0.54, 700);
+  const box4Y = growUp(0.50, 0.55, 700);
+  const box5Y = growUp(0.48, 0.53, 650);
+  const box6Y = growUp(0.49, 0.54, 650);
+  const box7Y = growUp(0.50, 0.55, 650);
 
   // Wave 5 — lanterns (translate + fade)
-  const lantern1Y = growUp(0.74, 0.80, 500);
-  const lantern1O = fadeIn(0.74, 0.80);
-  const lantern2Y = growUp(0.75, 0.81, 500);
-  const lantern2O = fadeIn(0.75, 0.81);
-  const lantern3Y = growUp(0.76, 0.82, 500);
-  const lantern3O = fadeIn(0.76, 0.82);
+  const lantern1Y = growUp(0.49, 0.54, 500);
+  const lantern1O = fadeIn(0.49, 0.54);
+  const lantern2Y = growUp(0.50, 0.55, 500);
+  const lantern2O = fadeIn(0.50, 0.55);
+  const lantern3Y = growUp(0.51, 0.56, 500);
+  const lantern3O = fadeIn(0.51, 0.56);
 
   // Wave 6 — computer table
-  const computerTableY = growUp(0.75, 0.81, 600);
+  const computerTableY = growUp(0.50, 0.55, 600);
 
   return (
   <svg

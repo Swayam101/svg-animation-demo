@@ -7,24 +7,24 @@ interface Slide2Props extends React.SVGProps<SVGSVGElement> {
 const Slide2: React.FC<Slide2Props> = React.memo(({ scrollProgress = 0, ...props }) => {
   // Entry animations for Slide2 elements (fade in and slide in from different directions)
   
-  // Phase 2 curtain fully covers at 0.70 — snap all Slide2 elements at curtain rise
-  const SLIDE2_EXIT = 0.65;
+  // Slide2 exits before curtain 2 rises (0.38). Sequential: no overlap with Slide3.
+  const SLIDE2_EXIT = 0.38;
 
-  // Quick fade-in helper — all elements fade in together 0.42→0.47 (under curtain),
-  // then snap out when curtain rises for Slide2→3 transition
-  const slide2Fade = (entryStart = 0.42, entryEnd = 0.47) => {
+  // Quick fade-in helper — all elements fade in 0.22→0.27 (under curtain 1 fall),
+  // snap out when curtain 2 rises for Slide2→3 transition
+  const slide2Fade = (entryStart = 0.22, entryEnd = 0.27) => {
     if (scrollProgress < entryStart) return 0;
     if (scrollProgress < entryEnd) return (scrollProgress - entryStart) / (entryEnd - entryStart);
     return scrollProgress < SLIDE2_EXIT ? 1 : 0;
   };
 
-  const getGroundEntryOpacity     = () => slide2Fade(0.42, 0.47);
-  const getLanternEntryOpacity    = () => slide2Fade(0.42, 0.47);
-  const getGroundShovelledOpacity = () => slide2Fade(0.42, 0.47);
+  const getGroundEntryOpacity     = () => slide2Fade(0.22, 0.27);
+  const getLanternEntryOpacity    = () => slide2Fade(0.22, 0.27);
+  const getGroundShovelledOpacity = () => slide2Fade(0.22, 0.27);
 
   // Lantern - scale up on entry, hold at full scale, snap away
   const getLanternEntryScale = () => {
-    const entryStart = 0.42; const entryEnd = 0.47;
+    const entryStart = 0.22; const entryEnd = 0.27;
     const minScale = 0.5;
     if (scrollProgress < entryStart) return minScale;
     if (scrollProgress <= entryEnd) return minScale + (1 - minScale) * ((scrollProgress - entryStart) / (entryEnd - entryStart));

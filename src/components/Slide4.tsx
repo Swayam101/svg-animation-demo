@@ -4,9 +4,9 @@ interface Slide4Props extends React.HTMLAttributes<HTMLDivElement> {
   scrollProgress?: number;
 }
 
-// Synced with metro: both 0.94→0.96. WINDOW = 1/39 so last building completes exactly at cityProgress=1.
+// City buildings animate 0.65→0.98 (~33% of scroll). WINDOW = 1/39 so elements stagger in.
 const TOTAL_ELEMENTS = 39;
-const WINDOW = 1 / TOTAL_ELEMENTS; // ~0.0256; all 39 elements fit in 0–1, last completes at 0.96
+const WINDOW = 1 / TOTAL_ELEMENTS;
 const SLIDE_DIST = 400; // SVG units to slide up from
 
 function easeOut(t: number): number {
@@ -56,9 +56,9 @@ const ID_TO_ANIM: Record<string, number> = {
   "lamp-post-12": 39,
 };
 
-// Synced with metro: both 0.94→0.96. Train and last building finish together.
-const CITY_START = 0.94;
-const CITY_END = 0.96;
+// City visible and animating through metro section
+const CITY_START = 0.65;
+const CITY_END = 0.98;
 
 const Slide4: React.FC<Slide4Props> = React.memo(({ scrollProgress = 0, ...props }) => {
   const objectRef = React.useRef<HTMLObjectElement>(null);

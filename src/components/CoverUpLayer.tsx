@@ -10,31 +10,30 @@ const COVERUP_SCOPED_CSS = (
 ).replace(/\.cls-/g, '#coverup-svg .cls-');
 
 const CoverUpLayer: React.FC<CoverUpLayerProps> = React.memo(({ scrollProgress = 0, ...props }) => {
-  // Two-phase curtain — one per section transition
-  // Phase 1 (Section 1→2):  rise 0.22→0.27 | hold →0.47 | fall 0.47→0.54
-  // Phase 2 (Section 2→3):  rise 0.60→0.65 | hold →0.84 | fall 0.84→0.91
-  //   Curtain is fully up at 0.65 so Slide2 snap-exit happens behind it.
-  // REST_Y: resting translateY — curtain peeks into the bottom of the scene
+  // Two-phase curtain — one per section transition. Sequential: no overlap.
+  // Phase 1 (Desert→Construction): rise 0.12→0.15 | hold →0.18 | fall 0.18→0.22
+  // Phase 2 (Construction→City):   rise 0.38→0.42 | hold →0.50 | fall 0.50→0.55
+  //   Curtain down by 0.55 so Slide3 visible. Slide3 exits 0.62→0.65, Slide4/Metro start 0.65.
   const REST_Y = 30;
   const getCurtainY = (): string => {
     // Phase 1
-    if (scrollProgress >= 0.22 && scrollProgress <= 0.54) {
-      if (scrollProgress <= 0.27) {
-        const p = (scrollProgress - 0.22) / (0.27 - 0.22);
+    if (scrollProgress >= 0.12 && scrollProgress <= 0.22) {
+      if (scrollProgress <= 0.15) {
+        const p = (scrollProgress - 0.12) / (0.15 - 0.12);
         return `${REST_Y - REST_Y * p}%`;
       }
-      if (scrollProgress <= 0.47) return '0%';
-      const p = (scrollProgress - 0.47) / (0.54 - 0.47);
+      if (scrollProgress <= 0.18) return '0%';
+      const p = (scrollProgress - 0.18) / (0.22 - 0.18);
       return `${REST_Y * p}%`;
     }
     // Phase 2
-    if (scrollProgress >= 0.60 && scrollProgress <= 0.91) {
-      if (scrollProgress <= 0.65) {
-        const p = (scrollProgress - 0.60) / (0.65 - 0.60);
+    if (scrollProgress >= 0.38 && scrollProgress <= 0.55) {
+      if (scrollProgress <= 0.42) {
+        const p = (scrollProgress - 0.38) / (0.42 - 0.38);
         return `${REST_Y - REST_Y * p}%`;
       }
-      if (scrollProgress <= 0.84) return '0%';
-      const p = (scrollProgress - 0.84) / (0.91 - 0.84);
+      if (scrollProgress <= 0.50) return '0%';
+      const p = (scrollProgress - 0.50) / (0.55 - 0.50);
       return `${REST_Y * p}%`;
     }
     return `${REST_Y}%`;

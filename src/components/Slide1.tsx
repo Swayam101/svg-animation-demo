@@ -8,12 +8,12 @@ interface SVGComponentProps extends React.SVGProps<SVGSVGElement> {
 
 const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress = 0, ...props }) => {
 
-  // Scroll-based EXIT animations
-  // Moon - rises during Section 1 + Section 2, holds at peak height after
+  // Scroll-based EXIT animations — aligned with sequential timeline
+  // Moon - rises during desert + construction, holds through city, shrinks during metro
   const getMoonYOffset = () => {
-    const riseStart  = 0.15;
-    const riseEnd    = 0.60;
-    const baseOffset = 80;   // pushes initial position lower
+    const riseStart  = 0.05;
+    const riseEnd    = 0.40;
+    const baseOffset = 80;
     const maxOffset  = -280;
 
     if (scrollProgress < riseStart) return baseOffset;
@@ -22,10 +22,9 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
     return baseOffset + (maxOffset - baseOffset) * p;
   };
 
-  // Moon - grows to peak through Section 2, then shrinks back to normal
   const getMoonScale = () => {
-    const growStart   = 0.15; const growEnd   = 0.60;
-    const shrinkStart = 0.60; const shrinkEnd = 0.78;
+    const growStart   = 0.05; const growEnd   = 0.40;
+    const shrinkStart = 0.65; const shrinkEnd = 0.90;
     const minScale  = 0.5;
     const peakScale = 1.1;
 
@@ -41,54 +40,32 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
     return minScale;
   };
 
-  // Curtain covers scene at 0.27 — all Slide1 elements snap invisible then
-  const getTent1ExitOpacity    = () => scrollProgress < 0.27 ? 1 : 0;
-  const getCampfireExitOpacity = () => scrollProgress < 0.27 ? 1 : 0;
-  const getStonesExitOpacity   = () => scrollProgress < 0.27 ? 1 : 0;
-  const getStoreExitOpacity    = () => scrollProgress < 0.27 ? 1 : 0;
+  // Curtain covers scene at 0.15 — all Slide1 elements snap invisible then
+  const getTent1ExitOpacity    = () => scrollProgress < 0.15 ? 1 : 0;
+  const getCampfireExitOpacity = () => scrollProgress < 0.15 ? 1 : 0;
+  const getStonesExitOpacity   = () => scrollProgress < 0.15 ? 1 : 0;
+  const getStoreExitOpacity    = () => scrollProgress < 0.15 ? 1 : 0;
 
-  // Ground layer exit animations - staggered "grow down" during Slide2 exit (0.63 → 0.75)
-  // Each layer exits at a slightly different time for a natural cascading effect.
-
-  // Exit order: middle first → upper → front last
-  // Re-entry mirrors exit: front first (it exited last) → upper → middle last (it exited first)
-
-  // Ground bg exit starts when Phase 2 curtain RISES (0.65)
-  // Ground bg re-entry starts when Phase 2 curtain FALLS (0.84)
-
-  // Middle: first to exit, last to re-enter
-  // Exit under rising curtain (0.65→0.70), re-enter under curtain hold (0.70→0.84)
-  // Re-entry order: front first → upper → middle last, all done by 0.80
+  // Ground layer exit — during Phase 2 curtain rise (0.38→0.45). No re-entry (sequential timeline).
   const getGroundBackMiddleExit = () => {
-    const exitS = 0.65; const exitE = 0.72; const dist = 350;
-    const entryS = 0.76; const entryE = 0.82;
+    const exitS = 0.38; const exitE = 0.42; const dist = 350;
     if (scrollProgress < exitS) return 0;
     if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    if (scrollProgress < entryS) return dist;
-    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
-    return 0;
+    return dist;
   };
 
-  // Upper: second to exit, second to re-enter
   const getGroundBackUpperExit = () => {
-    const exitS = 0.67; const exitE = 0.74; const dist = 400;
-    const entryS = 0.73; const entryE = 0.79;
+    const exitS = 0.39; const exitE = 0.43; const dist = 400;
     if (scrollProgress < exitS) return 0;
     if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    if (scrollProgress < entryS) return dist;
-    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
-    return 0;
+    return dist;
   };
 
-  // Front: last to exit, first to re-enter
   const getGroundBackFrontExit = () => {
-    const exitS = 0.69; const exitE = 0.76; const dist = 450;
-    const entryS = 0.70; const entryE = 0.76;
+    const exitS = 0.40; const exitE = 0.45; const dist = 450;
     if (scrollProgress < exitS) return 0;
     if (scrollProgress <= exitE) return dist * ((scrollProgress - exitS) / (exitE - exitS));
-    if (scrollProgress < entryS) return dist;
-    if (scrollProgress <= entryE) return dist * (1 - (scrollProgress - entryS) / (entryE - entryS));
-    return 0;
+    return dist;
   };
 
 
@@ -757,7 +734,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
                 </g>
               </g>
               {/* Tent 2 - slides LEFT */}
-              <g id="tents-campfire-tent-2" style={{ opacity: scrollProgress < 0.27 ? 1 : 0 }}>
+              <g id="tents-campfire-tent-2" style={{ opacity: scrollProgress < 0.15 ? 1 : 0 }}>
                 <g>
                   <path
                     className="cls-37"
@@ -812,7 +789,7 @@ const SVGComponent: React.FC<SVGComponentProps> = React.memo(({ scrollProgress =
                 </g>
               </g>
               {/* Tent 3 - slides RIGHT */}
-              <g id="tents-campfire-tent-3" style={{ opacity: scrollProgress < 0.27 ? 1 : 0 }}>
+              <g id="tents-campfire-tent-3" style={{ opacity: scrollProgress < 0.15 ? 1 : 0 }}>
                 <g>
                   <path
                     className="cls-37"
