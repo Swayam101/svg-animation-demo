@@ -16,21 +16,38 @@ const PlaneOverlay = lazy(() => import('./components/PlaneOverlay'))
 const App: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0)
   const rafRef = useRef<number | null>(null)
+  const targetProgressRef = useRef(0)
+  const displayProgressRef = useRef(0)
   // Deferred for decorative layers — reduces work during rapid scroll
   const deferredScrollProgress = useDeferredValue(scrollProgress)
   // Deferred for secondary layers (Slide2, Slide3, PlaneOverlay) — slight lag acceptable
   const deferredSecondary = useDeferredValue(scrollProgress)
 
   useEffect(() => {
+    const scrollHeight = () => document.documentElement.scrollHeight - window.innerHeight
+    const getProgress = () => Math.min(window.scrollY / scrollHeight(), 1)
+
     const handleScroll = () => {
-      if (rafRef.current !== null) return
-      rafRef.current = requestAnimationFrame(() => {
-        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-        const progress = Math.min(window.scrollY / scrollHeight, 1)
-        setScrollProgress(progress)
-        rafRef.current = null
-      })
+      targetProgressRef.current = getProgress()
     }
+
+    // Sync initial position
+    targetProgressRef.current = getProgress()
+    displayProgressRef.current = getProgress()
+    setScrollProgress(getProgress())
+
+    const lerp = 0.2 // Balances smooth follow with responsiveness
+    const animate = () => {
+      const target = targetProgressRef.current
+      const current = displayProgressRef.current
+      const diff = target - current
+      if (Math.abs(diff) > 0.0001) {
+        displayProgressRef.current = current + diff * lerp
+        setScrollProgress(displayProgressRef.current)
+      }
+      rafRef.current = requestAnimationFrame(animate)
+    }
+    rafRef.current = requestAnimationFrame(animate)
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => {

@@ -15,10 +15,10 @@ const easeOut = (t: number): number => {
 
 // Synced with Slide3 exit: rises during Slide3 exit (0.62→0.65), goes down after exit done
 const REST_Y = 100;
-const ENTRANCE_START = 0.55; // when Slide3 starts exiting
+const ENTRANCE_START = 0.50; // when Slide3 starts exiting
 const ENTRANCE_END = 0.65;   // when Slide3 exit done, mountain fully up
-const EXIT_START = 0.65;     // mountain starts going down
-const EXIT_END = 0.72;       // mountain down, reveals Slide4/Metro
+const EXIT_START = 0.70;     // mountain starts going down
+const EXIT_END = 0.76;       // mountain down, reveals Slide4/Metro
 
 // 4 layers: back (light, small) → front (dark, large). xTranslate in vw to cover full screen.
 const LAYERS = [
