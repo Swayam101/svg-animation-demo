@@ -12,6 +12,7 @@ import Section6 from './components/Section6'
 import Section7 from './components/Section7'
 import Section8 from './components/Section8'
 import Section9 from './components/Section9'
+import Loader from './components/Loader'
 import { BACKGROUND_BLUR_PX, BACKGROUND_BLUR_TINT } from './constants/ui'
 
 // Lazy-load heavier slides and overlays for code splitting
@@ -70,6 +71,7 @@ const App: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: "#000", minHeight: '100vh' }}>
+      <Loader />
       {/* Scroll container for animation */}
       <div style={{ height: '6000vh', position: 'relative'}}>
         <div style={{ position: 'sticky', top: 0, width: '100%', height: '100vh', overflow: 'hidden' }}>

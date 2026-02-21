@@ -6,11 +6,10 @@ interface Section9Props {
   scrollProgress?: number;
 }
 
-// Section9: FAQ — ~8% of scroll (final section)
+// Section9: FAQ — ~8% of scroll (final section, no fade out)
 const SECTION9_START = 0.92;
 const SECTION9_END = 1;
 const FADE_IN_END = 0.95;
-const FADE_OUT_START = 0.98;
 
 function progressInRange(p: number, start: number, end: number): number {
   if (p <= start) return 0;
@@ -51,9 +50,8 @@ const Section9: React.FC<Section9Props> = ({ scrollProgress = 0 }) => {
 
   const inRange = scrollProgress >= SECTION9_START && scrollProgress <= SECTION9_END;
   const fadeIn = progressInRange(scrollProgress, SECTION9_START, FADE_IN_END);
-  const fadeOut = FADE_OUT_START >= SECTION9_END ? 1 : 1 - progressInRange(scrollProgress, FADE_OUT_START, SECTION9_END);
-  const opacity = Math.min(fadeIn, fadeOut);
-  const displayOpacity = inRange ? Math.max(opacity, 0.4) : opacity;
+  // No fade out for last section — stays at full opacity once visible
+  const displayOpacity = inRange ? Math.max(fadeIn, 0.4) : fadeIn;
 
   const willRender = scrollProgress >= SECTION9_START - 0.02 && scrollProgress <= SECTION9_END + 0.02;
 
