@@ -6,7 +6,7 @@ interface Section9Props {
   scrollProgress?: number;
 }
 
-// Section9: FAQ + Footer — ~8% of scroll (final section)
+// Section9: FAQ — ~8% of scroll (final section)
 const SECTION9_START = 0.92;
 const SECTION9_END = 1;
 const FADE_IN_END = 0.95;
@@ -46,7 +46,6 @@ const Section9: React.FC<Section9Props> = ({ scrollProgress = 0 }) => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const hasAnimatedRef = useRef(false);
 
@@ -71,14 +70,12 @@ const Section9: React.FC<Section9Props> = ({ scrollProgress = 0 }) => {
       gsap.set(titleRef.current, { opacity: 0, y: 20 });
       gsap.set(subtitleRef.current, { opacity: 0, y: 16 });
       gsap.set(faqRef.current, { opacity: 0, y: 24 });
-      gsap.set(footerRef.current, { opacity: 0, y: 16 });
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       tl.to(titleRef.current, { opacity: 1, y: 0, duration: 0.5 })
         .to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3")
-        .to(faqRef.current, { opacity: 1, y: 0, duration: 0.5 }, "-=0.2")
-        .to(footerRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.2");
+        .to(faqRef.current, { opacity: 1, y: 0, duration: 0.5 }, "-=0.2");
     });
   }, [inRange]);
 
@@ -150,64 +147,6 @@ const Section9: React.FC<Section9Props> = ({ scrollProgress = 0 }) => {
             </div>
           ))}
         </div>
-
-        {/* Footer */}
-        <footer
-          ref={footerRef}
-          className="mt-16 grid gap-8 border-t border-white/10 pt-12 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {/* Brand */}
-          <div className="flex flex-col gap-2">
-            <p className="font-anybody text-2xl font-light tracking-wide text-[var(--text-primary)]">
-              dApp Studio
-            </p>
-            <p className="kite-one-regular text-sm text-[var(--text-secondary)]">
-              Your Gateway to Web Innovation
-            </p>
-            <p className="kite-one-regular mt-2 text-xs text-[var(--text-muted)]">
-              © 2025 dApp Studio. All Rights Reserved
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <p className="font-anybody mb-3 text-sm font-medium uppercase tracking-wider text-[var(--text-primary)]">
-              Quick Links
-            </p>
-            <nav className="flex flex-col gap-2">
-              {["Home", "About", "Pricing", "Testimonials", "FAQs", "Contact us"].map((link) => (
-                <a
-                  key={link}
-                  href="#"
-                  className="kite-one-regular text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-                >
-                  {link}
-                </a>
-              ))}
-            </nav>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <p className="font-anybody mb-3 text-sm font-medium uppercase tracking-wider text-[var(--text-primary)]">
-              Get in touch
-            </p>
-            <div className="flex flex-col gap-2">
-              <a
-                href="tel:+18919891191"
-                className="kite-one-regular text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-              >
-                +1 891 989-11-91
-              </a>
-              <a
-                href="mailto:help@logoipsum.com"
-                className="kite-one-regular text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-              >
-                help@logoipsum.com
-              </a>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );
