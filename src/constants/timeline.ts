@@ -177,12 +177,3 @@ export function progressInRange(p: number, start: number, end: number): number {
   return (p - start) / (end - start);
 }
 
-/** True if scroll progress p is within [start, end] (inclusive). */
-export function isInRange(p: number, start: number, end: number): boolean {
-  return p >= start && p <= end;
-}
-
-/** Create a range config for use with progressInRange. */
-export function range(start: number, end: number) {
-  return { start, end } as const;
-}

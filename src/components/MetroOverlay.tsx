@@ -13,19 +13,19 @@ const METRO_SCOPED_CSS = (
 ).replace(/\.cls-/g, "#metro-overlay-svg .cls-");
 
 // Train travels left→right. Start more left (out of screen), reduced total distance to sync with city.
-const METRO_TRAVEL_START = -600;
-const METRO_TRAVEL_END = 1300;
+const METRO_TRAVEL_START = -800;
+const METRO_TRAVEL_END = 2500;
 const METRO_TRAVEL_RANGE = METRO_TRAVEL_END - METRO_TRAVEL_START;
 
 // Metro in 2 parts: Part 1 (0.70–0.76), pause 0.06, Part 2 (0.82–0.95)
 const METRO_SHOW_AT = 0.70;
-const PART1_END = 0.76;
-const PAUSE_DURATION = 0.06;
+const PART1_END = 0.82;
+const PAUSE_DURATION = 0.03;
 const PART2_START = PART1_END + PAUSE_DURATION; // 0.82
-const TRAVEL_END = 0.95;
+const TRAVEL_END = 1.0;
 
-const PART1_DISTANCE = METRO_TRAVEL_RANGE * 0.5;
-const PART2_DISTANCE = METRO_TRAVEL_RANGE * 0.5;
+const PART1_DISTANCE = METRO_TRAVEL_RANGE * 0.3;
+const PART2_DISTANCE = METRO_TRAVEL_RANGE * 0.4;
 
 const metroEaseOut = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : 1 - Math.pow(1 - t, 4));
 

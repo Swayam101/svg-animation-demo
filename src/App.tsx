@@ -1,6 +1,18 @@
 import React, { useState, useEffect, useRef, useDeferredValue, lazy, Suspense } from 'react'
 import Slide1 from './components/Slide1'
 import Layer from './components/Layer'
+import BlurOverlay from './components/BlurOverlay'
+import ContentLayer from './components/ContentLayer'
+import HeroSection from './components/HeroSection'
+import Section2 from './components/Section2'
+import Section3 from './components/Section3'
+import Section4 from './components/Section4'
+import Section5 from './components/Section5'
+import Section6 from './components/Section6'
+import Section7 from './components/Section7'
+import Section8 from './components/Section8'
+import Section9 from './components/Section9'
+import { BACKGROUND_BLUR_PX, BACKGROUND_BLUR_TINT } from './constants/ui'
 
 // Lazy-load heavier slides and overlays for code splitting
 const Slide2 = lazy(() => import('./components/Slide2'))
@@ -47,8 +59,8 @@ const App: React.FC = () => {
       }
       rafRef.current = requestAnimationFrame(animate)
     }
-    rafRef.current = requestAnimationFrame(animate)
 
+    rafRef.current = requestAnimationFrame(animate)
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => {
       window.removeEventListener('scroll', handleScroll)
@@ -59,7 +71,7 @@ const App: React.FC = () => {
   return (
     <div style={{ backgroundColor: "#000", minHeight: '100vh' }}>
       {/* Scroll container for animation */}
-      <div style={{ height: '3000vh', position: 'relative'}}>
+      <div style={{ height: '6000vh', position: 'relative'}}>
         <div style={{ position: 'sticky', top: 0, width: '100%', height: '100vh', overflow: 'hidden' }}>
           <Suspense fallback={null}>
             {/* Layer 1: Slide1 - Background SVG (always visible first) */}
@@ -96,7 +108,12 @@ const App: React.FC = () => {
             <Layer zIndex={7}>
               <MetroOverlay scrollProgress={scrollProgress} />
             </Layer>
-
+            {/* Blur overlay — z-index driven by BLUR_ZINDEX_RANGES in constants/ui.ts */}
+            <BlurOverlay
+              scrollProgress={scrollProgress}
+              blurPx={BACKGROUND_BLUR_PX}
+              tint={BACKGROUND_BLUR_TINT}
+            />
             {/* Layer 8: CoverUpLayer - curtain that covers scene during section transitions */}
             <Layer zIndex={10}>
               <CoverUpLayer scrollProgress={scrollProgress} />
@@ -111,6 +128,21 @@ const App: React.FC = () => {
             <Layer zIndex={20}>
               <CloudsLayer scrollProgress={deferredScrollProgress} />
             </Layer>
+
+   
+
+            {/* Content layer — hero + sections 2–9 (scroll-driven visibility) */}
+            <ContentLayer>
+              <HeroSection scrollProgress={scrollProgress} />
+              <Section2 scrollProgress={scrollProgress} />
+              <Section3 scrollProgress={scrollProgress} />
+              <Section4 scrollProgress={scrollProgress} />
+              <Section5 scrollProgress={scrollProgress} />
+              <Section6 scrollProgress={scrollProgress} />
+              <Section7 scrollProgress={scrollProgress} />
+              <Section8 scrollProgress={scrollProgress} />
+              <Section9 scrollProgress={scrollProgress} />
+            </ContentLayer>
           </Suspense>
         </div>
       </div>

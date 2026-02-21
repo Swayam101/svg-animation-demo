@@ -1,4 +1,5 @@
 import * as React from "react";
+import { easeOut } from "../utils/easing";
 
 interface Slide4Props extends React.HTMLAttributes<HTMLDivElement> {
   scrollProgress?: number;
@@ -23,10 +24,6 @@ const PART1_TRIGGERS: number[] = [
 const PART2_TRIGGERS: number[] = [
   0.71, 0.71, 0.71, 0.80, 0.80, 0.81, // el 16-19, 20-23, 24-27, 28-31, 32-35, 36-39
 ];
-
-function easeOut(t: number): number {
-  return 1 - Math.pow(1 - t, 3);
-}
 
 function getGroupTrigger(n: number): { triggerAt: number; windowSize: number } {
   if (n <= PART1_LAST) {

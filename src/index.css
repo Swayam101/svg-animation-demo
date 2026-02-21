@@ -1,9 +1,68 @@
+@import url("https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,100..900;1,100..900&family=Kite+One&display=swap");
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Typography & Color System
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Text */
+  --text-primary: #eaf2ff;
+  --text-secondary: #c9d6ea;
+  --text-muted: #9fb0cc;
+
+  /* Buttons */
+  --btn-light-bg: #e9e6e2;
+  --btn-dark-text: #1f2c4d;
+
+  /* Glass Navbar */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+/* Tailwind theme extensions */
+@theme {
+  --font-anybody: "Anybody", sans-serif;
+  --font-kite-one: "Kite One", sans-serif;
+}
+
+.kite-one-regular {
+  font-family: "Kite One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-kite-one);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+/* Section2 card expand animation */
+.section2-list-item.expanded {
+  flex-direction: column;
+  padding: 1.5rem;
+}
+.section2-list-item.expanded .avatar {
+  width: 5rem;
+  height: 5rem;
+  margin-right: 0;
+  margin-bottom: 1rem;
+  margin-left: 0;
+}
+.section2-list-item.expanded .description {
+  align-items: center;
+  text-align: center;
+}
+.section2-list-item.expanded .additional-content {
+  display: flex;
 }
